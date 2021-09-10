@@ -1,0 +1,2 @@
+# Ignore LibreOffice CSV backup files.
+*.csv#
