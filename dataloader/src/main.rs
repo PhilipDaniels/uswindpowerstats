@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 use env_logger::Builder;
-use logging_timer::{finish, stime, stimer};
+use logging_timer::{executing, finish, stime, stimer};
 use once_cell::sync::Lazy;
 use serde::Deserialize;
 use tiberius::Client;
@@ -71,6 +71,13 @@ struct UsState {
     area: Option<i32>,
 }
 
+impl UsState {
+    /// Return the area in km² (the area in the CSV is in square miles).
+    fn area_in_square_km(&self) -> Option<i32> {
+        self.area.map(|a| (a as f32 * 2.58999) as i32)
+    }
+}
+
 async fn load_us_states(file: PathBuf) -> Result<(), Box<dyn Error>> {
     let tmr = stimer!("LOAD_US_STATES");
     let mut rdr = csv::ReaderBuilder::new()
@@ -83,9 +90,43 @@ async fn load_us_states(file: PathBuf) -> Result<(), Box<dyn Error>> {
         states.push(state);
     }
 
-    finish!(tmr, "Loaded {} US states", states.len());
+    executing!(tmr, "Loaded {} US states from CSV", states.len());
 
-    let conn = open_ms_sql_connection().await?;
+    let mut client = open_ms_sql_connection().await?;
+    for state in &states {
+        let stmt = "
+        BEGIN TRANSACTION;
+
+        UPDATE dbo.State WITH (UPDLOCK, SERIALIZABLE) SET Name = @P1, Capital = @P2, Population = @P3, AreaSquareKm = @P4, StateType = @P5
+        WHERE Id = @P6;
+
+        IF @@ROWCOUNT = 0 BEGIN
+            INSERT INTO dbo.State (Id, Name, Capital, Population, AreaSquareKm, StateType)
+            VALUES (@P6, @P1, @P2, @P3, @P4, @P5);
+        END
+
+        COMMIT TRANSACTION;
+        ";
+
+        let state_type = state.state_type.chars().nth(0).unwrap().to_ascii_uppercase().to_string();
+        let _result = client.execute(stmt, 
+            &[&state.name, &state.capital, &state.population, &state.area_in_square_km(), &state_type, &state.abbreviation]).await?;
+    }
+
+    executing!(tmr, "Loaded {} US states into database", states.len());
+
+    let ids = states.iter()
+        .fold("".to_string(),
+        |a,b| if a.len() == 0 { format!("'{}'", b.abbreviation) } else { format!("{}, '{}'", a, b.abbreviation)});
+        
+    let stmt = format!("DELETE dbo.State WHERE Id NOT IN ({})", ids);
+    let result = client.execute(stmt, &[]).await?;
+    executing!(tmr, "Deleted extraneous {} US states from the database", result.rows_affected()[0]);
+
+    let row = client.simple_query("SELECT COUNT(*) FROM dbo.State").await?.into_row().await?.unwrap();
+    let num_states : i32 = row.get(0).unwrap();
+    finish!(tmr, "There are now {} US states in the database", num_states);
+
     Ok(())
 }
 
@@ -95,26 +136,16 @@ static CONN_STR: Lazy<String> = Lazy::new(|| {
     })
 });
 
-
 async fn open_ms_sql_connection() -> Result<Client<Compat<TcpStream>>, Box<dyn std::error::Error>> {
     let config = tiberius::Config::from_ado_string(&CONN_STR)?;
-
     let tcp = TcpStream::connect(config.get_addr()).await?;
     tcp.set_nodelay(true)?;
     let client = Client::connect(config, tcp.compat_write()).await?;
-    
-    // let stream = client.query("SELECT @P1", &[&42_i32]).await?;
-    // let row = stream.into_row().await?.unwrap();
-
-    // println!("{:?}", row);
-    // assert_eq!(Some(42), row.get(0));
-
     Ok(client)
 }
 
-
 #[stime]
-fn load_turbines(file: PathBuf) {
+fn load_turbines(_file: PathBuf) {
     
 }
 
