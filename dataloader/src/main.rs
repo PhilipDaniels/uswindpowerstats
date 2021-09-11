@@ -1,8 +1,11 @@
 use chrono::{DateTime, Utc};
 use env_logger::Builder;
-use log::info;
-use logging_timer::stime;
+use logging_timer::{finish, stime, stimer};
+use once_cell::sync::Lazy;
 use serde::Deserialize;
+use tiberius::Client;
+use tokio::net::TcpStream;
+use tokio_util::compat::{Compat, TokioAsyncWriteCompatExt};
 use std::error::Error;
 use std::io::Write;
 use std::path::PathBuf;
@@ -16,12 +19,13 @@ struct Opt {
     turbines_file: Option<PathBuf>
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
     configure_logging();
     
     let opt = Opt::from_args();
     if let Some(file) = opt.us_states_file {
-        load_us_states(file)?;
+        load_us_states(file).await?;
     }
     if let Some(file) = opt.turbines_file {
         load_turbines(file);
@@ -67,18 +71,47 @@ struct UsState {
     area: Option<i32>,
 }
 
-#[stime]
-fn load_us_states(file: PathBuf) -> Result<(), Box<dyn Error>> {
+async fn load_us_states(file: PathBuf) -> Result<(), Box<dyn Error>> {
+    let tmr = stimer!("LOAD_US_STATES");
     let mut rdr = csv::ReaderBuilder::new()
         .trim(csv::Trim::All)
         .from_path(file)?;
 
-    for record in rdr.deserialize() {
-        let record: UsState = record?;
+    let mut states = Vec::new();
+    for result in rdr.deserialize() {
+        let state: UsState = result?;
+        states.push(state);
     }
 
+    finish!(tmr, "Loaded {} US states", states.len());
+
+    let conn = open_ms_sql_connection().await?;
     Ok(())
 }
+
+static CONN_STR: Lazy<String> = Lazy::new(|| {
+    std::env::var("MSSQL_CONNECTION_STRING").unwrap_or_else(|_| {
+        "server=tcp:localhost,1433;User Id=SA;Password=EawRsi2PCfurVZi7dym9;Initial Catalog=UsWindPowerStats;TrustServerCertificate=true".to_owned()
+    })
+});
+
+
+async fn open_ms_sql_connection() -> Result<Client<Compat<TcpStream>>, Box<dyn std::error::Error>> {
+    let config = tiberius::Config::from_ado_string(&CONN_STR)?;
+
+    let tcp = TcpStream::connect(config.get_addr()).await?;
+    tcp.set_nodelay(true)?;
+    let client = Client::connect(config, tcp.compat_write()).await?;
+    
+    // let stream = client.query("SELECT @P1", &[&42_i32]).await?;
+    // let row = stream.into_row().await?.unwrap();
+
+    // println!("{:?}", row);
+    // assert_eq!(Some(42), row.get(0));
+
+    Ok(client)
+}
+
 
 #[stime]
 fn load_turbines(file: PathBuf) {
