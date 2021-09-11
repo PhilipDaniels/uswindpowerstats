@@ -3,6 +3,7 @@ use env_logger::Builder;
 use logging_timer::{executing, finish, stimer};
 use once_cell::sync::Lazy;
 use serde::Deserialize;
+use serde_aux::prelude::deserialize_bool_from_anything;
 use std::error::Error;
 use std::io::Write;
 use std::path::PathBuf;
@@ -29,7 +30,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         load_us_states_to_database(&states).await?;
     }
     if let Some(file) = opt.turbines_file {
-        load_turbines(file);
+        let turbines = load_turbines_from_csv(file)?;
     }
 
     Ok(())
@@ -151,20 +152,56 @@ async fn open_ms_sql_connection() -> Result<Client<Compat<TcpStream>>, Box<dyn s
     Ok(client)
 }
 
-async fn load_turbines(file: PathBuf) -> Result<(), Box<dyn Error>> {
-    let tmr = stimer!("LOAD_US_TURBINES");
-    // let mut rdr = csv::ReaderBuilder::new()
-    //     .trim(csv::Trim::All)
-    //     .from_path(file)?;
+#[derive(Debug, Deserialize)]
+struct TurbineCsv {
+    case_id: i32,
+    faa_ors: String,
+    faa_asn: String,
+    usgs_pr_id: Option<i32>,
+    eia_id: Option<i32>,
+    t_state: String,
+    t_county: String,
+    t_fips: i32,
+    p_name: String,
+    p_year: Option<i32>,
+    p_tnum: i32,
+    p_cap: Option<f32>,
+    t_manu: String,
+    t_model: String,
+    t_cap: Option<i32>,
+    t_hh: Option<f32>,
+    t_rd: Option<f32>,
+    t_rsa: Option<f32>,
+    t_ttlh: Option<f32>,
+    #[serde(deserialize_with = "deserialize_bool_from_anything")]
+    retrofit: bool,
+    retrofit_year: Option<i32>,
+    t_conf_atr: u8,
+    t_conf_loc: u8,
+    t_img_date: String,
+    t_img_srce: String,
+    xlong: f32,
+    ylat: f32,
+}
 
-    // let mut states = Vec::new();
-    // for result in rdr.deserialize() {
-    //     let state: UsState = result?;
-    //     states.push(state);
-    // }
+fn load_turbines_from_csv(file: PathBuf) -> Result<Vec<TurbineCsv>, Box<dyn Error>> {
+    let tmr = stimer!("LOAD_US_TURBINES_FROM_CSV");
+    let mut rdr = csv::ReaderBuilder::new()
+        .trim(csv::Trim::All)
+        .from_path(file)?;
 
-    // executing!(tmr, "Loaded {} US states from CSV", states.len());
+    let mut turbines = Vec::new();
+    for result in rdr.deserialize() {
+        let turbine: TurbineCsv = result?;
+        turbines.push(turbine);
+    }
 
+    finish!(tmr, "Loaded {} US turbines from CSV", turbines.len());
+    Ok(turbines)
+
+}
+
+async fn load_us_turbines_to_database(states: &[TurbineCsv]) -> Result<(), Box<dyn Error>> {
     // let mut client = open_ms_sql_connection().await?;
     // for state in &states {
     //     let stmt = "
@@ -200,6 +237,5 @@ async fn load_turbines(file: PathBuf) -> Result<(), Box<dyn Error>> {
     // let num_states : i32 = row.get(0).unwrap();
     // finish!(tmr, "There are now {} US states in the database", num_states);
 
-    Ok(())    
+    Ok(())
 }
-
