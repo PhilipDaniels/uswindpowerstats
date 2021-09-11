@@ -1,15 +1,15 @@
 use chrono::{DateTime, Utc};
 use env_logger::Builder;
-use logging_timer::{executing, finish, stime, stimer};
+use logging_timer::{executing, finish, stimer};
 use once_cell::sync::Lazy;
 use serde::Deserialize;
-use tiberius::Client;
-use tokio::net::TcpStream;
-use tokio_util::compat::{Compat, TokioAsyncWriteCompatExt};
 use std::error::Error;
 use std::io::Write;
 use std::path::PathBuf;
 use structopt::StructOpt;
+use tiberius::Client;
+use tokio_util::compat::{Compat, TokioAsyncWriteCompatExt};
+use tokio::net::TcpStream;
 
 #[derive(StructOpt, Debug)]
 struct Opt {
@@ -25,7 +25,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     
     let opt = Opt::from_args();
     if let Some(file) = opt.us_states_file {
-        load_us_states(file).await?;
+        let states = load_us_states_from_csv(file)?;
+        load_us_states_to_database(&states).await?;
     }
     if let Some(file) = opt.turbines_file {
         load_turbines(file);
@@ -78,8 +79,8 @@ impl UsState {
     }
 }
 
-async fn load_us_states(file: PathBuf) -> Result<(), Box<dyn Error>> {
-    let tmr = stimer!("LOAD_US_STATES");
+fn load_us_states_from_csv(file: PathBuf) -> Result<Vec<UsState>, Box<dyn Error>> {
+    let tmr = stimer!("LOAD_US_STATES_FROM_CSV");
     let mut rdr = csv::ReaderBuilder::new()
         .trim(csv::Trim::All)
         .from_path(file)?;
@@ -90,10 +91,16 @@ async fn load_us_states(file: PathBuf) -> Result<(), Box<dyn Error>> {
         states.push(state);
     }
 
-    executing!(tmr, "Loaded {} US states from CSV", states.len());
+    finish!(tmr, "Loaded {} US states from CSV", states.len());
+
+    Ok(states)
+}
+
+async fn load_us_states_to_database(states: &[UsState]) -> Result<(), Box<dyn Error>> {
+    let tmr = stimer!("LOAD_US_STATES_TO_DATABASE");
 
     let mut client = open_ms_sql_connection().await?;
-    for state in &states {
+    for state in states {
         let stmt = "
         BEGIN TRANSACTION;
 
@@ -144,8 +151,55 @@ async fn open_ms_sql_connection() -> Result<Client<Compat<TcpStream>>, Box<dyn s
     Ok(client)
 }
 
-#[stime]
-fn load_turbines(_file: PathBuf) {
-    
+async fn load_turbines(file: PathBuf) -> Result<(), Box<dyn Error>> {
+    let tmr = stimer!("LOAD_US_TURBINES");
+    // let mut rdr = csv::ReaderBuilder::new()
+    //     .trim(csv::Trim::All)
+    //     .from_path(file)?;
+
+    // let mut states = Vec::new();
+    // for result in rdr.deserialize() {
+    //     let state: UsState = result?;
+    //     states.push(state);
+    // }
+
+    // executing!(tmr, "Loaded {} US states from CSV", states.len());
+
+    // let mut client = open_ms_sql_connection().await?;
+    // for state in &states {
+    //     let stmt = "
+    //     BEGIN TRANSACTION;
+
+    //     UPDATE dbo.State WITH (UPDLOCK, SERIALIZABLE) SET Name = @P1, Capital = @P2, Population = @P3, AreaSquareKm = @P4, StateType = @P5
+    //     WHERE Id = @P6;
+
+    //     IF @@ROWCOUNT = 0 BEGIN
+    //         INSERT INTO dbo.State (Id, Name, Capital, Population, AreaSquareKm, StateType)
+    //         VALUES (@P6, @P1, @P2, @P3, @P4, @P5);
+    //     END
+
+    //     COMMIT TRANSACTION;
+    //     ";
+
+    //     let state_type = state.state_type.chars().nth(0).unwrap().to_ascii_uppercase().to_string();
+    //     let _result = client.execute(stmt, 
+    //         &[&state.name, &state.capital, &state.population, &state.area_in_square_km(), &state_type, &state.abbreviation]).await?;
+    // }
+
+    // executing!(tmr, "Loaded {} US states into database", states.len());
+
+    // let ids = states.iter()
+    //     .fold("".to_string(),
+    //     |a,b| if a.len() == 0 { format!("'{}'", b.abbreviation) } else { format!("{}, '{}'", a, b.abbreviation)});
+        
+    // let stmt = format!("DELETE dbo.State WHERE Id NOT IN ({})", ids);
+    // let result = client.execute(stmt, &[]).await?;
+    // executing!(tmr, "Deleted extraneous {} US states from the database", result.rows_affected()[0]);
+
+    // let row = client.simple_query("SELECT COUNT(*) FROM dbo.State").await?.into_row().await?.unwrap();
+    // let num_states : i32 = row.get(0).unwrap();
+    // finish!(tmr, "There are now {} US states in the database", num_states);
+
+    Ok(())    
 }
 
