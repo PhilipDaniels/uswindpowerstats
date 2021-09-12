@@ -1,5 +1,6 @@
 use chrono::{DateTime, Utc};
 use env_logger::Builder;
+use itertools::Itertools;
 use logging_timer::{executing, finish, stimer};
 use once_cell::sync::Lazy;
 use serde::Deserialize;
@@ -31,6 +32,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
     if let Some(file) = opt.turbines_file {
         let turbines = load_turbines_from_csv(file)?;
+        load_us_turbines_to_database(&turbines).await?;
     }
 
     Ok(())
@@ -202,7 +204,24 @@ fn load_turbines_from_csv(file: PathBuf) -> Result<Vec<TurbineCsv>, Box<dyn Erro
 }
 
 async fn load_us_turbines_to_database(states: &[TurbineCsv]) -> Result<(), Box<dyn Error>> {
-    // let mut client = open_ms_sql_connection().await?;
+    let tmr = stimer!("LOAD_US_TURBINES_TO_DATABASE");
+
+    let mut client = open_ms_sql_connection().await?;
+
+    let counties = states.iter()
+        .map(|s| (&s.t_state, &s.t_county))
+        .unique()
+        .collect::<Vec<_>>();
+
+    load_counties_to_database(&mut client, counties).await?;
+
+    let manufacturers = states.iter()
+        .map(|s| &s.t_manu)
+        .unique()
+        .collect::<Vec<_>>();
+
+    load_manufacturers_to_database(&mut client, &manufacturers).await?;
+
     // for state in &states {
     //     let stmt = "
     //     BEGIN TRANSACTION;
@@ -237,5 +256,53 @@ async fn load_us_turbines_to_database(states: &[TurbineCsv]) -> Result<(), Box<d
     // let num_states : i32 = row.get(0).unwrap();
     // finish!(tmr, "There are now {} US states in the database", num_states);
 
+    Ok(())
+}
+
+async fn load_counties_to_database(client: &mut Client<Compat<TcpStream>>, counties: Vec<(&String, &String)>) -> Result<(), Box<dyn Error>> {
+    let tmr = stimer!("LOAD_US_COUNTIES_TO_DATABASE");
+
+    for county in &counties {
+        let stmt = "
+        IF NOT EXISTS (SELECT 1 FROM dbo.County C2 WHERE C2.StateId = @P1 and C2.Name = @P2)
+        INSERT INTO dbo.County(StateId, Name)
+        VALUES (@P1, @P2)
+        ";
+
+        let _result = client.execute(stmt, 
+             &[county.0, county.1]).await?;
+    }
+
+    finish!(tmr, "Loaded {} US counties into the database", counties.len());
+    Ok(())
+}
+
+async fn load_manufacturers_to_database(client: &mut Client<Compat<TcpStream>>, manufacturers: &Vec<&String>) -> Result<(), Box<dyn Error>> {
+    let tmr = stimer!("LOAD_MANUFACTURERS_TO_DATABASE");
+
+    for m in manufacturers {
+        let name = *m;
+        
+        if name.len() == 0 {
+            let stmt = "
+            IF NOT EXISTS (SELECT 1 FROM dbo.Manufacturer M2 WHERE M2.Name IS NULL)
+            INSERT INTO dbo.Manufacturer(Name)
+            VALUES (NULL)
+            ";
+            
+            let _result = client.execute(stmt, &[]).await?;
+
+        } else {
+            let stmt = "
+            IF NOT EXISTS (SELECT 1 FROM dbo.Manufacturer M2 WHERE M2.Name = @P1)
+            INSERT INTO dbo.Manufacturer(Name)
+            VALUES (@P1)
+            ";
+            
+            let _result = client.execute(stmt, &[name]).await?;
+        }
+    }
+
+    finish!(tmr, "Loaded {} manufacturers into the database", manufacturers.len());
     Ok(())
 }
