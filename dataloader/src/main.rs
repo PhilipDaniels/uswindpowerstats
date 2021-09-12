@@ -4,12 +4,11 @@ use itertools::Itertools;
 use logging_timer::{executing, finish, stimer};
 use once_cell::sync::Lazy;
 use serde::Deserialize;
-use serde_aux::prelude::deserialize_bool_from_anything;
 use std::error::Error;
 use std::io::Write;
 use std::path::PathBuf;
 use structopt::StructOpt;
-use tiberius::Client;
+use tiberius::{Client, ToSql};
 use tokio_util::compat::{Compat, TokioAsyncWriteCompatExt};
 use tokio::net::TcpStream;
 
@@ -32,7 +31,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
     if let Some(file) = opt.turbines_file {
         let turbines = load_turbines_from_csv(file)?;
-        load_us_turbines_to_database(&turbines).await?;
+        load_all_csv_data_to_database(&turbines).await?;
     }
 
     Ok(())
@@ -175,8 +174,7 @@ struct TurbineCsv {
     t_rd: Option<f32>,
     t_rsa: Option<f32>,
     t_ttlh: Option<f32>,
-    #[serde(deserialize_with = "deserialize_bool_from_anything")]
-    retrofit: bool,
+    retrofit: u8,
     retrofit_year: Option<i32>,
     t_conf_atr: u8,
     t_conf_loc: u8,
@@ -203,58 +201,93 @@ fn load_turbines_from_csv(file: PathBuf) -> Result<Vec<TurbineCsv>, Box<dyn Erro
 
 }
 
-async fn load_us_turbines_to_database(states: &[TurbineCsv]) -> Result<(), Box<dyn Error>> {
-    let tmr = stimer!("LOAD_US_TURBINES_TO_DATABASE");
+/// An auxiliary type so we don't have to pass a huge tuple to the database load function.
+#[derive(Debug, Copy, Clone)]
+struct Model<'a> {
+    t_manu: &'a String,
+    t_model: &'a String,
+    t_cap: Option<i32>,
+    t_hh: Option<f32>,
+    t_rd: Option<f32>,
+    t_rsa: Option<f32>,
+    t_ttlh: Option<f32>,
+}
+
+/// We consider models equivalent based on manufacturer and name only.
+/// This means we don't have to worry about the floats being only PartialEq.
+/// We assume things are named uniquely in the spreadsheet.
+impl<'a> PartialEq for Model<'a> {
+    fn eq(&self, other: &Self) -> bool {
+        self.t_manu == other.t_manu && self.t_model == other.t_model
+    }
+}
+
+impl<'a> Eq for Model<'a> {}
+
+impl TurbineCsv {
+    fn to_model(&self) -> Model {
+        Model {
+            t_manu: &self.t_manu,
+            t_model: &self.t_model,
+            t_cap: self.t_cap,
+            t_hh: self.t_hh,
+            t_rd: self.t_rd,
+            t_rsa: self.t_rsa,
+            t_ttlh: self.t_ttlh,
+        }
+    }
+}
+
+impl<'a> std::hash::Hash for Model<'a> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.t_manu.hash(state);
+        self.t_model.hash(state);
+    }
+}
+
+async fn load_all_csv_data_to_database(turbines: &[TurbineCsv]) -> Result<(), Box<dyn Error>> {
+    let _tmr = stimer!("LOAD_ALL_CSV_DATA_TO_DATABASE");
 
     let mut client = open_ms_sql_connection().await?;
 
-    let counties = states.iter()
-        .map(|s| (&s.t_state, &s.t_county))
+    let counties = turbines.iter()
+        .map(|t| (&t.t_state, &t.t_county))
         .unique()
         .collect::<Vec<_>>();
 
     load_counties_to_database(&mut client, counties).await?;
 
-    let manufacturers = states.iter()
-        .map(|s| &s.t_manu)
+    let manufacturers = turbines.iter()
+        .map(|t| &t.t_manu)
         .unique()
         .collect::<Vec<_>>();
 
     load_manufacturers_to_database(&mut client, &manufacturers).await?;
 
-    // for state in &states {
-    //     let stmt = "
-    //     BEGIN TRANSACTION;
+    let models = turbines.iter()
+        .map(|t| t.to_model())
+        .unique()
+        .collect::<Vec<_>>();
 
-    //     UPDATE dbo.State WITH (UPDLOCK, SERIALIZABLE) SET Name = @P1, Capital = @P2, Population = @P3, AreaSquareKm = @P4, StateType = @P5
-    //     WHERE Id = @P6;
+    load_turbine_models_to_database(&mut client, &models).await?;
 
-    //     IF @@ROWCOUNT = 0 BEGIN
-    //         INSERT INTO dbo.State (Id, Name, Capital, Population, AreaSquareKm, StateType)
-    //         VALUES (@P6, @P1, @P2, @P3, @P4, @P5);
-    //     END
+    let image_sources = turbines.iter()
+        .map(|t| &t.t_img_srce)
+        .unique()
+        .collect::<Vec<_>>();
 
-    //     COMMIT TRANSACTION;
-    //     ";
+    load_image_sources_to_database(&mut client, &image_sources).await?;
 
-    //     let state_type = state.state_type.chars().nth(0).unwrap().to_ascii_uppercase().to_string();
-    //     let _result = client.execute(stmt, 
-    //         &[&state.name, &state.capital, &state.population, &state.area_in_square_km(), &state_type, &state.abbreviation]).await?;
-    // }
+    // Temporarily multiply all capacities by 1000 so that we can convert them to ints
+    // and hence use unique().
+    let projects = turbines.iter()
+        .map(|t| (&t.p_name, t.p_tnum, t.p_cap.map(|c| (c * 1000.0) as i32)))
+        .unique()
+        .map(|(nm, tn, cap)| (nm, tn, cap.map(|c| (c as f32) / 1000.0)))
+        .collect::<Vec<_>>();
 
-    // executing!(tmr, "Loaded {} US states into database", states.len());
-
-    // let ids = states.iter()
-    //     .fold("".to_string(),
-    //     |a,b| if a.len() == 0 { format!("'{}'", b.abbreviation) } else { format!("{}, '{}'", a, b.abbreviation)});
-        
-    // let stmt = format!("DELETE dbo.State WHERE Id NOT IN ({})", ids);
-    // let result = client.execute(stmt, &[]).await?;
-    // executing!(tmr, "Deleted extraneous {} US states from the database", result.rows_affected()[0]);
-
-    // let row = client.simple_query("SELECT COUNT(*) FROM dbo.State").await?.into_row().await?.unwrap();
-    // let num_states : i32 = row.get(0).unwrap();
-    // finish!(tmr, "There are now {} US states in the database", num_states);
+    load_projects_to_database(&mut client, &projects).await?;
+    load_turbines_to_database(&mut client, turbines).await?;
 
     Ok(())
 }
@@ -280,29 +313,144 @@ async fn load_counties_to_database(client: &mut Client<Compat<TcpStream>>, count
 async fn load_manufacturers_to_database(client: &mut Client<Compat<TcpStream>>, manufacturers: &Vec<&String>) -> Result<(), Box<dyn Error>> {
     let tmr = stimer!("LOAD_MANUFACTURERS_TO_DATABASE");
 
-    for m in manufacturers {
-        let name = *m;
-        
-        if name.len() == 0 {
-            let stmt = "
-            IF NOT EXISTS (SELECT 1 FROM dbo.Manufacturer M2 WHERE M2.Name IS NULL)
-            INSERT INTO dbo.Manufacturer(Name)
-            VALUES (NULL)
-            ";
-            
-            let _result = client.execute(stmt, &[]).await?;
+    // We allow blank names. Easier than dealing with NULL.
 
-        } else {
-            let stmt = "
-            IF NOT EXISTS (SELECT 1 FROM dbo.Manufacturer M2 WHERE M2.Name = @P1)
-            INSERT INTO dbo.Manufacturer(Name)
-            VALUES (@P1)
-            ";
-            
-            let _result = client.execute(stmt, &[name]).await?;
-        }
+    for m in manufacturers {
+        let stmt = "
+        IF NOT EXISTS (SELECT 1 FROM dbo.Manufacturer M2 WHERE M2.Name = @P1)
+        INSERT INTO dbo.Manufacturer(Name)
+        VALUES (@P1)
+        ";
+        
+        let _result = client.execute(stmt, &[*m]).await?;
     }
 
     finish!(tmr, "Loaded {} manufacturers into the database", manufacturers.len());
     Ok(())
+}
+
+async fn load_turbine_models_to_database<'a>(client: &mut Client<Compat<TcpStream>>, models: &Vec<Model<'a>>) -> Result<(), Box<dyn Error>> {
+    let tmr = stimer!("LOAD_TURBINE_MODELS_TO_DATABASE");
+
+    for model in models {
+        let stmt = "
+        EXEC dbo.model_upsert @P1, @P2, @P3, @P4, @P5, @P6, @P7
+        ";
+
+        let params: &[&dyn ToSql] = &[
+            model.t_manu,
+            model.t_model,
+            &model.t_cap,
+            &model.t_hh,
+            &model.t_rd,
+            &model.t_rsa,
+            &model.t_ttlh,
+        ];
+
+        let _result = client.execute(stmt, params).await?;
+    }
+
+    finish!(tmr, "Loaded {} turbine models into the database", models.len());
+    Ok(())
+}
+
+async fn load_image_sources_to_database(client: &mut Client<Compat<TcpStream>>, image_sources: &Vec<&String>) -> Result<(), Box<dyn Error>> {
+    let tmr = stimer!("LOAD_IMAGE_SOURCES_TO_DATABASE");
+
+    // We allow blank names. Easier than dealing with NULL.
+
+    for src in image_sources {
+        let stmt = "
+        IF NOT EXISTS (SELECT 1 FROM dbo.ImageSource S2 WHERE S2.Name = @P1)
+        INSERT INTO dbo.ImageSource(Name)
+        VALUES (@P1)
+        ";
+        
+        let _result = client.execute(stmt, &[*src]).await?;
+    }
+
+    finish!(tmr, "Loaded {} image sources into the database", image_sources.len());
+    Ok(())
+}
+
+async fn load_projects_to_database(client: &mut Client<Compat<TcpStream>>, projects: &[(&String, i32, Option<f32>)]) -> Result<(), Box<dyn Error>> {
+    let tmr = stimer!("LOAD_PROJECTS_TO_DATABASE");
+
+    for p in projects {
+        let stmt = "
+        BEGIN TRANSACTION;
+
+        UPDATE dbo.Project WITH (UPDLOCK, SERIALIZABLE) SET NumTurbines = @P1, CapacityMW = @P2
+        WHERE Name = @P3;
+
+        IF @@ROWCOUNT = 0 BEGIN
+            INSERT INTO dbo.Project(Name, NumTurbines, CapacityMW)
+            VALUES (@P3, @P1, @P2);
+        END
+
+        COMMIT TRANSACTION;
+        ";
+
+        let params: &[&dyn ToSql] = &[
+            &p.1,
+            &p.2,
+            p.0,
+        ];
+        
+        let _result = client.execute(stmt, params).await?;
+    }
+
+    finish!(tmr, "Loaded {} projects into the database", projects.len());
+    Ok(())
+}
+
+async fn load_turbines_to_database(client: &mut Client<Compat<TcpStream>>, turbines: &[TurbineCsv]) -> Result<(), Box<dyn Error>> {
+    let tmr = stimer!("LOAD_TURBINES_TO_DATABASE");
+
+    let stmt = "DELETE dbo.Turbine;";
+    let _result = client.execute(stmt, &[]).await?;
+
+    for (idx, t) in turbines.iter().enumerate() {
+        let stmt = "EXEC dbo.turbine_upsert @P1, @P2, @P3, @P4, @P5, @P6, @P7, @P8, @P9, @P10, @P11, @P12, @P13";
+        let image_date = parse_date(&t.t_img_date);
+
+        let params: &[&dyn ToSql] = &[
+            &t.t_state,
+            &t.t_county,
+            &t.p_name,
+            &t.t_manu,
+            &t.t_model,
+            &t.t_img_srce,
+            &t.retrofit,
+            &t.retrofit_year,
+            &t.t_conf_atr,
+            &t.t_conf_loc,
+            &image_date,
+            &t.ylat,
+            &t.xlong,
+        ];
+        
+        let _result = client.execute(stmt, params).await?;
+
+        if idx % 1000 == 0 {
+            executing!(tmr, "Loaded {} turbines into the database", idx);        
+        }
+    }
+
+    finish!(tmr, "Loaded {} turbines into the database", turbines.len());
+    Ok(())
+}
+
+fn parse_date(d: &str) -> Option<String> {
+    let mut parts = d.split('/');
+    
+    if let Some(m) = parts.next() {
+        if let Some(d) = parts.next() {
+            if let Some(y) = parts.next() {
+                return Some(format!("{}-{:0>2}-{:0>2}", y, m, d));
+            }
+        }
+    }
+
+    None
 }
