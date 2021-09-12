@@ -1,0 +1,643 @@
+/* ASSEMBLY CANDIDATES
+ * ----------------------------------------- */
+
+article,
+aside,
+dialog,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section {
+	display: block;
+}
+
+
+/* LEGITIMATE CUSTOM CSS
+ * ----------------------------------------- */
+
+html {
+	position: relative;
+	min-height: 100%;
+}
+
+body {
+	font-family: 'Open Sans Regular';
+	font-weight: 300;
+	font-size: 0.95rem
+}
+
+a {
+	color: rgb(47, 170, 255);
+	overflow-wrap: break-word;
+	word-wrap: break-word
+}
+
+a:hover {
+	color: #1384fe;
+}
+
+a.dark {
+	color: #404040 !important
+}
+
+a.dark:hover {
+	color: #000000 !important
+}
+
+.strong {
+	font-weight: 300;
+	font-family: 'Open Sans bold';
+	letter-spacing: -1px;
+}
+
+.limiter {
+	max-width: 62.5rem
+}
+
+.limiter-content {
+	max-width: 46rem
+}
+
+.dark {
+	color: #404040
+}
+
+.light {
+	color: #ffffff
+}
+
+.ltGray {
+	background-color: #d9dee4
+}
+
+.fill-purple {
+	background-color: #9daacd;
+}
+
+.fill-ltBlue {
+	background-color: rgba(92, 101, 123, 0.95);
+}
+
+.fill-light {
+	background: #f1f1f1;
+}
+
+.underline {
+	text-decoration: underline;
+}
+
+.no-underline,
+a.no-underline {
+	text-decoration: none;
+}
+
+.hr-div {
+	border: 0;
+	height: 1px;
+	background-image: -webkit-gradient(linear, left top, right top, from(rgba(0, 0, 0, 0)), color-stop(rgba(203, 196, 196, 0.8)), to(rgba(0, 0, 0, 0)));
+	background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(203, 196, 196, 0.8), rgba(0, 0, 0, 0));
+	margin: 10px auto;
+	width: 80%;
+}
+
+.majorheading {
+	font-family: 'Open Sans Semibold';
+	letter-spacing: -0.11rem;
+	font-weight: 300;
+}
+
+
+/* Splash styles
+ * ----------------------------------------- */
+
+.splashHeader {
+	font-family: 'Open Sans Bold';
+	letter-spacing: -1px;
+	font-weight: 300
+}
+
+.lg-text {
+	font-size: 1.05rem;
+}
+
+.graphic-splash {
+	background: url(../images/about-graphic-splash.png) 0 100% no-repeat;
+	background-size: 100% auto;
+	height: 350px;
+	bottom: 0px;
+}
+
+#main-splash {
+	background: url(../images/header.jpg) center top no-repeat;
+	background-size: cover;
+}
+
+#data-splash {
+	background: url(../images/data.jpg) center top no-repeat;
+	background-size: cover;
+}
+
+#help-splash {
+	background: url(../images/helpSplash.jpg) center top no-repeat;
+	background-size: cover;
+}
+
+
+#partner-splash video {
+	-webkit-filter: brightness(50%);
+	filter: brightness(50%);
+}
+
+
+.video-container {
+	position: absolute;
+	top: 43%;
+	left: 43%;
+	min-width: 100%;
+	height: 500px;
+	width: auto;
+	height: auto;
+	-webkit-transform: translate(-43%, -43%);
+	transform: translate(-43%, -43%);
+}
+
+.h1,
+h1 {
+	font-size: 32px;
+}
+
+.h3,
+h3 {
+	font-size: 22px;
+}
+
+.h5,
+h5 {
+	font-size: 18px;
+}
+
+.clip {
+	overflow: hidden
+}
+
+/* Hide play button IOS */
+
+*::-webkit-media-controls-panel {
+	display: none !important;
+	-webkit-appearance: none;
+}
+
+*::--webkit-media-controls-play-button {
+	display: none !important;
+	-webkit-appearance: none;
+}
+
+*::-webkit-media-controls-start-playback-button {
+	display: none !important;
+	-webkit-appearance: none;
+}
+
+video::-webkit-media-controls-start-playback-button {
+	display: none !important;
+}
+
+/* No JS
+ * ----------------------------------------- */
+#no_js_box {
+	position: fixed;
+	text-align: center;
+	top: 50%;
+	background: white;
+	z-index: 2;
+	left: 50%;
+	width: 300px;
+	margin-left: -150px;
+	border: 1px solid #575757;
+	padding: 20px;
+	border-radius: 5px;
+	-webkit-box-shadow: 0px 0px 4px 4px rgba(204, 204, 204, 0.5);
+	box-shadow: 0px 0px 4px 4px rgba(204, 204, 204, 0.5);
+}
+
+/* Particles header
+ * ----------------------------------------- */
+canvas {
+	display: block;
+	vertical-align: bottom;
+}
+
+#particles-js {
+	position: absolute;
+	max-height: 550px;
+	width: 100%;
+	height: 100%;
+	background: #5489af;
+	background: webkit-linear-gradient(45deg, #080808 0%, #5489af 100%);
+	background: linear-gradient(45deg, #080808 0%, #5489af 100%);
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: 50% 50%;
+}
+
+.particles-js-canvas-el {
+	top: 0px;
+	position: absolute;
+}
+
+/* Header elements
+ * ----------------------------------------- */
+
+.navbar {
+	padding: 0.8rem;
+	-webkit-box-shadow: 0 0.125rem 0.125rem -0.125rem rgba(0, 0, 0, .15);
+	box-shadow: 0 0.125rem 0.125rem -0.125rem rgba(0, 0, 0, .15)
+}
+
+.noshadow {
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
+
+.navbar-nav {
+	font-family: 'Open Sans Bold';
+	letter-spacing: -0.05rem;
+	font-size: 0.875rem
+}
+
+.navbar-toggler {
+	cursor: pointer
+}
+
+.navbar-toggler-icon-close {
+	display: inline-block;
+	width: 1.5em;
+	height: 1.5em;
+	vertical-align: middle;
+	content: "";
+	background: no-repeat center center;
+	background-image: none;
+	background-size: auto auto;
+	background-size: 100% 100%;
+}
+
+.navbar-toggler-icon,
+.navbar-toggler-icon-close {
+	background-image: url(../images/collapsed.svg);
+	background-size: 1.2rem;
+	margin-top: -0.5rem
+}
+
+.navbar-toggler-icon.light {
+	background-image: url(../images/collapsedLight.svg);
+}
+
+.navbar-toggler-icon-close {
+	background-image: url(../images/close.svg);
+	background-size: 1rem;
+}
+
+.navbar-toggler-icon-close.light {
+	background-image: url(../images/closeLight.svg);
+}
+
+.navbar-toggler.collapsed > .navbar-toggler-icon-close,
+.navbar-toggler:not(.collapsed) > .navbar-toggler-icon {
+	display: none;
+}
+
+.usgsLogo {
+	width: 120px;
+	background-size: 100% 100%;
+	background-image: url(../images/usgsLogo.svg);
+	height: 44px;
+}
+
+.usgsLogo.light {
+	background-image: url(../images/usgsLogoLight.svg);
+}
+
+.aweaLogo {
+	background-image: url(../images/aweaLogo.svg);
+	background-size: 100% 100%;
+	height: 54px;
+	width: 100%;
+}
+
+.aweaLogo:hover {
+	opacity: 1
+}
+
+.lbnlLogo {
+	background-image: url(../images/lbnlLogo.svg);
+	background-size: 100% 100%;
+	height: 72px;
+	width: 100%;
+}
+
+.usaLogo {
+	width: 8rem;
+	max-height: 100%
+}
+
+
+/* Button elements
+ * ----------------------------------------- */
+
+.button {
+	display: inline-block;
+	border-radius: 36px;
+	padding: 10px 36px;
+	font-weight: 300 !important;
+	text-align: center;
+	text-decoration: none !important;
+	-webkit-transition: background-color .125s, border-color .125s, color .125s;
+	transition: background-color .125s, border-color .125s, color .125s;
+	font-size: 12px;
+	font-family: 'Open Sans Bold';
+}
+
+.button.bordered {
+	background-color: transparent;
+	border: 2px solid;
+}
+
+button:focus {
+	outline: none
+}
+
+.filled {
+	background-color: #5e6979 !important;
+}
+
+/* Banner elements
+ * ----------------------------------------- */
+
+.bannerFixed {
+	padding-top: 5.5rem
+}
+
+.bannerMajor {
+	font-family: 'Open Sans Bold';
+	font-size: 2.2rem;
+	font-weight: 300;
+	letter-spacing: -3px;
+	line-height: 2.4rem;
+}
+
+.bannerMinor {
+	font-family: 'Open Sans Semibold';
+	font-size: 1.2rem;
+	font-weight: 300;
+	letter-spacing: -2px
+}
+
+#partBar {
+	-webkit-box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
+.logos > * img {
+	opacity: 0.5;
+	-webkit-transition: all 0.25s;
+	transition: all 0.25s;
+	margin: 18px;
+}
+
+.logos > * img:hover {
+	opacity: 1
+}
+
+.fill-logos {
+	background: #38414c;
+}
+
+.navbar-brand {
+	margin-right: 0px;
+}
+
+.allowHeader {
+	padding: 80px 0 0;
+	margin: -65px 0 0 -15px;
+}
+
+/* Sidebar elements
+ * ----------------------------------------- */
+
+#sidebar {
+	max-width: 220px
+}
+
+.sticky-top {
+	padding-top: 120px;
+	margin-top: -60px
+}
+
+.splashHeader.side {
+	margin-left: -10px;
+	font-size: 15px
+}
+
+#sidebar p,
+#sidebar a {
+	letter-spacing: -1px;
+	display: block;
+	margin-bottom: 0.6rem;
+	color: #404040
+}
+
+.navOffset {
+	padding-top: 90px;
+	margin-top: -90px;
+}
+
+/* Table elements
+ * ----------------------------------------- */
+
+th {
+	font-size: 14px;
+	font-family: 'Open Sans Semibold';
+	font-weight: 300;
+}
+
+.table th,
+.table td {
+	vertical-align: middle;
+}
+
+.smaller {
+	font-size: 13px;
+}
+
+/* Footer elements
+ * ----------------------------------------- */
+
+.footer {
+	bottom: 0;
+	width: 100%;
+	position: absolute
+}
+
+.fixed-footer {
+	margin-bottom: 18rem;
+}
+
+.footertext {
+	font: 0.95rem Franklin
+}
+
+.footertextsmall {
+	font: 0.75rem Franklin
+}
+
+.iconList {
+	margin-top: -2rem
+}
+
+.svgIconDark {
+	fill: #999 !important
+}
+
+.svgIconDark:hover {
+	fill: #404040 !important
+}
+
+/* Standard Resources
+ * ----------------------------------------- */
+p {
+	margin-top: 0;
+	margin-bottom: 0.6rem;
+}
+
+.code {
+	background: rgba(0, 0, 0, 0.08);
+	font-size: 13px;
+	padding: 2px;
+	border-radius: 3px;
+	font-family: 'Inconsolata', monospace;
+	color: #d01c1c;
+	font-style: normal;
+	border: 1px solid #cacaca
+}
+
+/* Help page
+ * ----------------------------------------- */
+
+img.help {
+	max-width: 700px;
+	-webkit-box-shadow: 1px 1px 4px 1px #BCB7B7;
+	box-shadow: 1px 1px 4px 1px #BCB7B7;
+	padding: 0px
+}
+
+.iconLg {
+	width: 28px;
+	height: 28px
+}
+
+.lazy {
+	display: none;
+}
+
+.faq-q {
+	font-size: 16px;
+}
+
+.faq-a {
+	font-size: 14px;
+}
+
+/* Sidebar
+ * ----------------------------------------- */
+
+.sticky {
+	position: -webkit-sticky;
+	position: sticky;
+	top: 100px;
+}
+
+.scrolled {
+	position: relative;
+}
+
+.nav-link.active {
+	color: black
+}
+
+/* Media queries
+ * ----------------------------------------- */
+
+@media (max-width: 36rem) {
+	.lead {
+		font-size: 1rem;
+	}
+
+	.noteBanner {
+		max-width: 100%;
+		-webkit-box-flex: 100%;
+		-ms-flex: 100%;
+		flex: 100%;
+		text-align: center !important
+	}
+
+	.noteIcon {
+		width: 5rem;
+	}
+
+	.footer,
+	.footer-brand {
+		text-align: center !important
+	}
+
+	.fixed-footer {
+		margin-bottom: 23rem;
+	}
+}
+
+@media (max-width: 991px) {
+	.navbar {
+		background-color: rgba(92, 101, 123, 0.95);
+	}
+
+}
+
+@media (max-width: 768px) {
+	.lg-text {
+		font-size: 0.95rem;
+		text-align: justify
+	}
+
+	.splashHeader {
+		font-size: 1.5rem;
+		text-align: center
+	}
+
+	h6.splashHeader {
+		font-size: 1.0rem;
+	}
+
+	.splashcontent {
+		-webkit-box-flex: 0;
+		-ms-flex: 0 0 100%;
+		flex: 0 0 100%;
+		max-width: 100%;
+	}
+
+	.sideList,
+	#sidebar {
+		display: none !important
+	}
+}
+
+@media (max-width: 465px) {
+	#partBar {
+		display: block !important
+	}
+
+	.partLogo {
+		display: none
+	}
+}

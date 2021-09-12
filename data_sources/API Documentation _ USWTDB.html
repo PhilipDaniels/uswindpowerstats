@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)https://eerscmap.usgs.gov/uswtdb/api-doc/#keyValue -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>API Documentation | USWTDB</title>
+    <meta name="title" content="USWTDB API">
+    <meta name="description" content="The USWTDB API allows for programmatic access to the U.S. Wind Turbine database.">
+    <link href="https://eerscmap.usgs.gov/uswtdb/assets/images/wfAppleSm.png" rel="apple-touch-icon" sizes="60x60">
+    <link href="https://eerscmap.usgs.gov/uswtdb/assets/images/wfAppleMd.png" rel="apple-touch-icon" sizes="76x76">
+    <link href="https://eerscmap.usgs.gov/uswtdb/assets/images/wfAppleLg.png" rel="apple-touch-icon" sizes="120x120">
+    <link href="https://eerscmap.usgs.gov/uswtdb/assets/images/wfAppleXLg.png" rel="apple-touch-icon" sizes="152x152">
+    <link href="https://eerscmap.usgs.gov/uswtdb/assets/images/favicon.ico" rel="shortcut icon" type="image/x-icon">
+
+    <!-- External CSS -->
+    <link href="./API Documentation _ USWTDB_files/css" rel="stylesheet">
+    <link rel="stylesheet" href="./API Documentation _ USWTDB_files/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="./API Documentation _ USWTDB_files/highlightDark.css">
+    <link rel="stylesheet" href="./API Documentation _ USWTDB_files/styles.css">
+    <link rel="stylesheet" href="./API Documentation _ USWTDB_files/fonts.min.css">
+    <script src="./API Documentation _ USWTDB_files/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="./API Documentation _ USWTDB_files/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="./API Documentation _ USWTDB_files/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="./API Documentation _ USWTDB_files/highlight.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="./API Documentation _ USWTDB_files/snap.svg-min.js"></script>
+    <script type="application/ld+json">
+        {"@context":"http://schema.org","@graph":[{"@type":"WebAPI","name":"U.S. Wind Turbine Database API","url":"https://eersc.usgs.gov/api/uswtdb/v1/turbines","description":"The USWTDB API allows for programmatic access to the U.S. Wind Turbine Database. The availability of the public API makes it possible for third party developers to build value-added applications leveraging the USWTDB.","documentation":"https://eerscmap.usgs.gov/uswtdb/api-doc/","image":"https://eersc.usgs.gov/uswtdb/assets/images/wfAppleLg.png","provider":[{"@type":"Organization","name":"U.S. Geological Survey","url":"https://www.usgs.gov/"}]},{"@type":"Organization","legalName":"U.S. Wind Turbine Database","parentOrganization":[{"@type":"Organization","name":"U.S. Geological Survey","url":"https://www.usgs.gov/"}],"url":"https://eersc.usgs.gov/uswtdb/","contactPoint":[{"@type":"ContactPoint","name":"Christopher Garrity","email":"cgarrity@usgs.gov","telephone":"+1-703-648-6426","contactType":"customer support"}],"logo":"https://eersc.usgs.gov/uswtdb/assets/images/wfAppleLg.png","sameAs":["https://twitter.com/usgs"]},{"@context":"https://schema.org","@type":"SiteNavigationElement","name":"U.S. Wind Turbine Database","url":"https://eersc.usgs.gov/uswtdb/"},{"@context":"https://schema.org","@type":"SiteNavigationElement","name":"Viewer","url":"https://eersc.usgs.gov/uswtdb/viewer/"},{"@context":"https://schema.org","@type":"SiteNavigationElement","name":"Partners","url":"https://eersc.usgs.gov/uswtdb/partners/"},{"@context":"https://schema.org","@type":"SiteNavigationElement","name":"Help Guide","url":"https://eersc.usgs.gov/uswtdb/help/"}]}
+    </script>
+    <noscript>
+        <div id="no_js_box">
+            <h6 class="splashHeader">JavaScript is disabled on your browser.</h6>
+            <p>For full functionality of this page it is necessary to enable JavaScript. Here are the <a href="http://www.enable-javascript.com" target="_blank"> instructions how to enable JavaScript in your web browser.</a></p>
+        </div>
+    </noscript>
+</head>
+
+<body class="fixed-footer">
+
+    <!-- Begin Header -->
+    <nav class="navbar navbar-expand-lg fixed-top fill-ltBlue">
+        <div class="container">
+            <span class="navbar-brand">
+                <a href="https://www.usgs.gov/" target="_blank" class="light d-inline-block align-top"><img src="./API Documentation _ USWTDB_files/usgsLogoLight.svg" alt="U.S. Geological Survey"></a>
+                <a class="partLogo ml-3" href="https://www.lbl.gov/" target="_blank"><img src="./API Documentation _ USWTDB_files/lbnlLogo.svg" style="width: 72px;margin-top: -6px;" alt="Lawrence Berkeley National Laboratory"></a>
+                <a class="partLogo ml-2" href="https://cleanpower.org/" target="_blank"><img src="./API Documentation _ USWTDB_files/acpLogo.svg" style="width: 74px;margin-left: 4px;" alt="American Clean Power Association"></a>
+            </span>
+            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon-close light"></span>
+                <span class="navbar-toggler-icon light"></span>
+            </button>
+            <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link light" href="https://eerscmap.usgs.gov/uswtdb/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link light" href="https://eerscmap.usgs.gov/uswtdb/viewer/" target="_blank">Viewer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link light" href="https://eerscmap.usgs.gov/uswtdb/data/">Get Data</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link light" href="https://eerscmap.usgs.gov/uswtdb/api-doc/">API</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link light" href="https://eerscmap.usgs.gov/uswtdb/partners/">Partners</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link light" href="https://eerscmap.usgs.gov/uswtdb/help/">Help Guide</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- End Header -->
+    <!-- Begin Content -->
+    <div id="particles-js" class="bannerFixed clip" style="position: relative">
+        <div class="container light pt-4 pb-4">
+            <div class="row">
+                <div class="splashcontent col-8 lg-text pb-4">
+                    <h1 class="splashHeader">USWTDB API</h1>
+                    <p>The USWTDB API allows for programmatic access to the U.S. Wind Turbine Database (USWTDB). The API is based on REST principles, where data are accessed via standard HTTPS requests to a dedicated API endpoint. Use the USWTDB API to programmatically query data through apps, stay in sync with USWTDB updates, and post new turbine data (authenticated users). Here we cover the basics of USWTDB API terminology and structure, and detail the various operations you can perform with the API.</p>
+                </div>
+            </div>
+        </div>
+    <canvas class="particles-js-canvas-el" width="1903" height="429" style="width: 100%; height: 100%;"></canvas></div>
+    <!-- Partner Content -->
+    <div id="partBar" class="container-fluid fill-light d-none">
+        <div class="justify-content-md-center mx-auto text-center">
+            <div class="col p-0">
+                <div class="logos">
+                    <a href="https://www.lbl.gov/" target="_blank"><img style="height: 32px;" src="./API Documentation _ USWTDB_files/lbnlLogoDark.svg" alt="Lawrence Berkeley National Laboratory"></a>
+                    <a href="https://cleanpower.org/" target="_blank"><img src="./API Documentation _ USWTDB_files/acpLogoDark.svg" alt="American Clean Power Association" style="margin-top: 8px;height: 44px;"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Partner -->
+    <div class="container dark py-2 text-justify">
+        <div class="row py-3">
+            <div class="col float-left" id="sidebar" data-spy="scroll" data-target="#main-content">
+                <div class="sticky-top">
+                    <h6 class="splashHeader side">The Basics</h6>
+                    <a href="https://eerscmap.usgs.gov/uswtdb/api-doc/#about">About the API</a>
+                    <a href="https://eerscmap.usgs.gov/uswtdb/api-doc/#resource">Resource Endpoint</a>
+
+                    <h6 class="splashHeader side">Data Model</h6>
+                    <a href="https://eerscmap.usgs.gov/uswtdb/api-doc/#response">API Response</a>
+                    <a href="https://eerscmap.usgs.gov/uswtdb/api-doc/#keyValue">Key/Value Codes</a>
+                    <a href="https://eerscmap.usgs.gov/uswtdb/api-doc/#statCodes">Status Codes</a>
+
+                    <h6 class="splashHeader side">Querying Data</h6>
+                    <a href="https://eerscmap.usgs.gov/uswtdb/api-doc/#pagination">Pagination</a>
+                    <a href="https://eerscmap.usgs.gov/uswtdb/api-doc/#ordering">Sorting</a>
+                    <a href="https://eerscmap.usgs.gov/uswtdb/api-doc/#rowFilter">Row Filtering</a>
+                    <a href="https://eerscmap.usgs.gov/uswtdb/api-doc/#operators">Operators</a>
+                    <a href="https://eerscmap.usgs.gov/uswtdb/api-doc/#colFilter">Column Filtering</a>
+
+                    <h6 class="splashHeader side">Authentication</h6>
+                    <a href="https://eerscmap.usgs.gov/uswtdb/api-doc/#roleAuth">Authorization</a>
+                    <a href="https://eerscmap.usgs.gov/uswtdb/api-doc/#token">JSON Web Tokens</a>
+                    <a href="https://eerscmap.usgs.gov/uswtdb/api-doc/#authReq">Authorized Requests</a>
+                </div>
+            </div>
+
+            <div class="col col-10" id="main-content">
+                <div class="mt-4">
+                    <h4 class="splashHeader navOffset" id="about">About the API</h4>
+                    <p>The USWTDB API allows for programmatic access to the U.S. Wind Turbine Database. Creation of the USWTDB API was meant to extend USWTDB visibility, expand user base, and create more productive internal workflows. The availability of the public API makes it possible for third party developers to build value-added applications leveraging the USWTDB. The API is HTTP-based (over SSL), and is compatible with any programming language that has an HTTP library (including directly in your browser). In this documentation, we'll show some examples of USWTDB API requests using <a href="https://curl.haxx.se/" target="_blank">cURL</a>, a command-line tool and library for transferring data with different parameters and methods. cURL provides a generic way to demonstrate HTTP requests and responses and allows users to translate similar requests into their specific language of choice. The USWTDB API endpoint conforms to the design principles of Representational State Transfer (REST) and uses the JSON data format for responses. Retrieval of turbine data from the USWTDB API requires a standard <span class="code">GET</span> request. Additional methods that submit or change USWTDB data require token-based authentication.</p>
+
+                </div>
+                <div class="mt-4">
+                    <h4 class="splashHeader navOffset" id="resource">Resource Endpoint</h4>
+                    <p>Resource endpoints referenced in this documentation are only accessible via https and have a base path of <span class="code">https://eersc.usgs.gov/api/uswtdb/v1/</span>. The base path, when combined with additional query parameters, constitute the full endpoint request. As an example, let’s say you wanted to get turbine level information from the USWTDB for turbine ID 3038257. To do this, you'd simply combine the base path <span class="code">https://eersc.usgs.gov/api/uswtdb/v1</span>, with the desired resource <span class="code">/turbines</span>, and append your query string <span class="code">?&amp;case_id=eq.3038257</span>. The full request is shown below (if you don't have cURL, simply paste the URL in quotes below into your browser to see the response).</p>
+                    <pre><code class="hljs javascript">curl -i -X GET <span class="hljs-string">"https://eersc.usgs.gov/api/uswtdb/v1/turbines?&amp;case_id=eq.3038257"</span></code></pre>
+                    <div class="mt-4">
+                        <h4 class="splashHeader navOffset" id="response">API Response</h4>
+                        <p>The response to the above request (below) is returned as JavaScript Object Notation (JSON) data. JSON is a light-weight, human readable, language-independent format for structuring data. It is used primarily to transmit data between the server and client web application. From our above query, we're requesting data for a single object (case_id = 3038257). An object is indicated by curly brackets, where everything inside of the curly brackets is part of the object.</p>
+                    </div>
+                    <pre><code class="json hljs">{
+    <span class="hljs-attr">"case_id"</span>: <span class="hljs-number">3038257</span>,
+    <span class="hljs-attr">"faa_ors"</span>: <span class="hljs-string">"19-022348"</span>,
+    <span class="hljs-attr">"faa_asn"</span>: <span class="hljs-string">"2011-WTE-22311-OE"</span>,
+    <span class="hljs-attr">"usgs_pr_id"</span>: <span class="hljs-number">20977</span>,
+    <span class="hljs-attr">"t_state"</span>: <span class="hljs-string">"IA"</span>,
+    <span class="hljs-attr">"t_county"</span>: <span class="hljs-string">"Story County"</span>,
+    <span class="hljs-attr">"t_fips"</span>: <span class="hljs-string">"19169"</span>,
+    <span class="hljs-attr">"p_name"</span>: <span class="hljs-string">"AG Land 4"</span>,
+    <span class="hljs-attr">"p_year"</span>: <span class="hljs-number">2012</span>,
+    <span class="hljs-attr">"p_tnum"</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">"p_cap"</span>: <span class="hljs-number">1.6</span>,
+    <span class="hljs-attr">"t_manu"</span>: <span class="hljs-string">"GE Wind"</span>,
+    <span class="hljs-attr">"t_model"</span>: <span class="hljs-string">"GE1.6-82.5"</span>,
+    <span class="hljs-attr">"t_cap"</span>: <span class="hljs-number">1600</span>,
+    <span class="hljs-attr">"t_hh"</span>: <span class="hljs-number">80</span>,
+    <span class="hljs-attr">"t_rd"</span>: <span class="hljs-number">82.5</span>,
+    <span class="hljs-attr">"t_rsa"</span>: <span class="hljs-number">5345.62</span>,
+    <span class="hljs-attr">"t_ttlh"</span>: <span class="hljs-number">121.3</span>,
+    <span class="hljs-attr">"retrofit"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"retrofit_year"</span>: <span class="hljs-literal">null</span>
+    <span class="hljs-string">"t_conf_atr"</span>: <span class="hljs-number">3</span>,
+    <span class="hljs-attr">"t_conf_loc"</span>: <span class="hljs-number">3</span>,
+    <span class="hljs-attr">"t_img_date"</span>: <span class="hljs-string">"1/1/2013"</span>,
+    <span class="hljs-attr">"t_img_srce"</span>: <span class="hljs-string">"NAIP"</span>,
+    <span class="hljs-attr">"xlong"</span>: <span class="hljs-number">-93.3549</span>,
+    <span class="hljs-attr">"ylat"</span>: <span class="hljs-number">41.90419</span>,
+    <span class="hljs-attr">"eia_id"</span>: <span class="hljs-literal">null</span>
+}</code></pre>
+                    <p>The two significant parts that make up JSON are keys and values. Together they make a key/value pair. We can see the returned turbine object above has 24 key/value pairs. Key value pairs are comma separated and follow a specific syntax, with the key, followed by a colon, followed by the value. The first line from the return above is key/value pair <span class="code">"case_id": 3038257</span>. The key is <span class="code">"case_id"</span> and the value is <span class="code">3038257</span>. A key is always a string enclosed in quotation marks, whereas a value can be a string, number, Boolean expression, array, or object.</p>
+                </div>
+                <div class="mt-4">
+                    <h4 class="splashHeader navOffset" id="keyValue">Key/Value Codes</h4>
+                    <p>Upon a successful response (see <a href="https://eerscmap.usgs.gov/uswtdb/api-doc/#statCodes">Status Codes</a> section), the USWTDB API will return turbine objects consisting of key/value pairs. Below is a list of USWTDB keys, related value types, and an explanation of what each key means. Turbine attribute data were gathered from the Federal Aviation Administration's Digital Obstacle File (DOF) and Obstruction Evaluation Airport Airspace Analysis Dataset (OE-AAA), the American Clean Power Association (ACP), Lawrence Berkeley National Laboratory, the U.S. Geological Survey, and additional online sources. In cases where data from these sources were unknown or missing, a "null" value was assigned to the key.</p>
+                    <div class="table-responsive">
+                        <table class="mt-4 table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Key</th>
+                                    <th scope="col">Value Type</th>
+                                    <th scope="col">Key Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">case_id</th>
+                                    <td>number&nbsp;(integer)</td>
+                                    <td>Unique stable identification number.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">faa_ors</th>
+                                    <td>string</td>
+                                    <td>Unique identifier for cross-reference to the Federal Aviation Administration (FAA) digital obstacle files.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">faa_asn</th>
+                                    <td>string</td>
+                                    <td>Unique identifier for cross-reference to the FAA obstruction evaluation airport airspace analysis dataset.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">usgs_pr_id</th>
+                                    <td>number&nbsp;(integer)</td>
+                                    <td>Unique identifier for cross-reference to the 2014 USGS turbine dataset.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">t_state</th>
+                                    <td>string</td>
+                                    <td>State where turbine is located.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">t_county</th>
+                                    <td>string</td>
+                                    <td>County where turbine is located.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">t_fips</th>
+                                    <td>string</td>
+                                    <td>State and county fips where turbine is located, based on spatial join of turbine points with US state and county.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">p_name</th>
+                                    <td>string</td>
+                                    <td>Name of the wind power project that the turbine is a part of. Project names are typically provided by the developer; some names are identified via other internet resources, and others are created by the authors to differentiate them from previous projects. Values are that were unknown were assigned a name based on the county where the turbine is located.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">p_year</th>
+                                    <td>number&nbsp;(integer)</td>
+                                    <td>Year that the turbine became operational and began providing power. Note this may differ from the year that construction began.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">p_tnum</th>
+                                    <td>number&nbsp;(integer)</td>
+                                    <td>Number of turbines in the wind power project.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">p_cap</th>
+                                    <td>number&nbsp;(float)</td>
+                                    <td>Cumulative capacity of all turbines in the wind power project in megawatts (MW).</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">t_manu</th>
+                                    <td>string</td>
+                                    <td>Turbine manufacturer - name of the original equipment manufacturer of the turbine.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">t_model</th>
+                                    <td>string</td>
+                                    <td>Turbine model - manufacturer's model name of each turbine.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">t_cap</th>
+                                    <td>number&nbsp;(integer)</td>
+                                    <td>Turbine rated capacity - stated output power at rated wind speed from manufacturer, ACP, and/or internet resources in kilowatts (kW).</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">t_hh</th>
+                                    <td>number&nbsp;(float)</td>
+                                    <td>Turbine hub height in meters (m).</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">t_rd</th>
+                                    <td>number&nbsp;(float)</td>
+                                    <td>Turbine rotor diameter in meters (m).</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">t_rsa</th>
+                                    <td>number&nbsp;(float)</td>
+                                    <td>Turbine rotor swept area in square meters (m<sup>2</sup>).</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">t_ttlh</th>
+                                    <td>number&nbsp;(float)</td>
+                                    <td>Turbine total height from ground to tip of a blade at its apex in meters (m).</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">retrofit</th>
+                                    <td>number&nbsp;(integer)</td>
+                                    <td>Indicator of whether the turbine has been partially retrofit after initial construction (e.g., rotor and/or nacelle replacement). 0 indicates no known retrofit. 1 indicates yes known retrofit.</td>
+                                </tr>
+                                    <tr>
+                                    <th scope="row">retrofit_year</th>
+                                    <td>number&nbsp;(integer)</td>
+                                    <td>Year in which the turbine was partially retrofit.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">t_conf_atr</th>
+                                    <td>number&nbsp;(integer)</td>
+                                    <td>Level of confidence in the turbine attributes. <br>1—No confidence: no attribute data beyond total height and year, 2—Partial confidence: incomplete information or substantial conflict between, 3—Full confidence: complete information, consistent across multiple data sources.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">t_conf_loc</th>
+                                    <td>number&nbsp;(integer)</td>
+                                    <td>Level of confidence in turbine location. <br>1— No turbine shown in image; image has clouds; imagery older than turbine built date, 2— Partial confidence: image shows a developed pad with concrete base and/or turbine parts on the ground, 3— Full confidence: image shows an installed turbine.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">t_img_date</th>
+                                    <td>number&nbsp;(integer)</td>
+                                    <td>Date of image used to visually verify turbine location. Note if source of image is NAIP, the month and day were set to 01/01.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">t_img_srce</th>
+                                    <td>string</td>
+                                    <td>Source of image used to visually verify turbine location.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">xlong</th>
+                                    <td>number&nbsp;(float)</td>
+                                    <td>Longitude of the turbine point, in decimal degrees.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">ylat</th>
+                                    <td>number&nbsp;(float)</td>
+                                    <td>Latitude of the turbine point, in decimal degrees.</td>
+                                </tr>
+                                    <tr>
+                                    <th scope="row">eia_id</th>
+                                    <td>number&nbsp;(integer)</td>
+                                    <td>Plant ID from Energy Information Administration (EIA).</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h4 class="splashHeader navOffset" id="statCodes">Status Codes</h4>
+                    <p>The USWTDB API returns appropriate HTTP status codes for every request. Response status codes indicate whether a specific request has been successfully completed. USWTDB API responses are grouped into four classes: successful responses (2XX), redirects (3XX), client errors (4XX), and server errors (5XX). An exhaustive list of status codes are defined in the <a href="https://tools.ietf.org/html/rfc2616#section-10" target="_blank">RFC 2616</a>. The most common USWTDB API status codes are listed in the table below.</p>
+                    <div class="table-responsive">
+                        <table class="mt-4 table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Code</th>
+                                    <th scope="col">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">200</th>
+                                    <td>OK - The request has succeeded. Clients can read the result of the request in the body and the headers of the response. The response is sent after a successful GET request.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">201</th>
+                                    <td>Created - The request has succeeded, and a new resource has been created as a result of it. The response is sent after a successful POST request.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">206</th>
+                                    <td>Partial Content - The request has succeeded and contains the requested range of data, as described in the <span class="code">Range</span> header of the request.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">400</th>
+                                    <td>Bad Request - The request could not be understood by the server due to malformed syntax. The message body will contain more information.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">401</th>
+                                    <td>Unauthorized - The server understood the request but is refusing to fulfill it. This error is likely due to authentication not being provided or invalid token. The message body will contain more information.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">404</th>
+                                    <td>Not Found - The requested resource could not be found. This error can be due to a temporary or permanent condition.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">409</th>
+                                    <td>Conflict - A request conflicts with the current state of the server. Most likely due to duplicate key value when attempting a POST. The message body will contain more information.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">500</th>
+                                    <td>Internal Server Error - Indicates that the server encountered an unexpected condition that prevented it from fulfilling the request.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">502</th>
+                                    <td>Bad Gateway - The USWTDB API is down or being upgraded.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">503</th>
+                                    <td>Service Unavailable - The server is currently unable to handle the request, commonly due to the server being overloaded.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h4 class="splashHeader navOffset" id="pagination">Pagination</h4>
+                    <p>When making requests to the USWTDB API, it's possible to receive a large amount of data in the response. The API has controls in place that let you paginate the results, to make returns more manageable and avoid extraneous network traffic. These controls let you set <span class="code">limit</span> and <span class="code">offset</span> via either request headers, or query parameters. Every API response contains <span class="code">Content-Range</span> headers which describe the size of results. By default, the response includes the current range, and, if sent with <span class="code">Prefer: count=exact</span> in the request, the total number of results. When using request headers to limit results, you simply specify the range of rows desired. For example, the request below returns the first 250 turbines (note that the offset numbering is zero-based).</p>
+                    <pre><code class="HTTP hljs"><span class="hljs-keyword">GET</span> <span class="hljs-string">/turbines</span> HTTP/1.1
+<span class="hljs-attribute">Range</span>: 0-249
+<span class="hljs-attribute">Prefer</span>: count=exact</code></pre>
+                    <p>Since we sent our preference <span class="code">Prefer: count=exact</span> in the request header, we get a <span class="code">Content-Range</span> response (below) that includes the total size of the table (58,188 records). This is particularly useful when rendering a 'last' link in a pagination control.</p>
+                    <pre><code class="HTTP hljs">HTTP/1.1 <span class="hljs-number">206</span> Partial Content
+<span class="hljs-attribute">Content-Range</span>: 0-249/58188</code></pre>
+
+                    <p>Paging the dataset can also be achieved by taking an <span class="code">offset</span> and <span class="code">limit</span> as query parameters. In the example below, the limit and offset were added to the query so that 50 (limit) turbine records are returned starting from the 300th (offset) record. Note that the API always returns range headers in the response, even if you use query parameters to paginate the query.</p>
+                    <pre><code class="hljs javascript">$ curl -i -X GET <span class="hljs-string">"https://eersc.usgs.gov/api/uswtdb/v1/turbines?&amp;offset=300&amp;limit=50"</span></code></pre>
+                </div>
+                <div class="mt-4">
+                    <h4 class="splashHeader navOffset" id="ordering">Sorting</h4>
+                    <p>You can reorder the records in the response by using <span class="code">order</span> in the query string. The parameter uses a comma separated list of turbine columns and can contain directions <span class="code">asc</span> (ascending) or <span class="code">desc</span> (descending) if desired. As an example (below), let's say we wanted to return turbine records sorted by the number of turbines per project (p_tnum) in ascending order, and then sorted by the year the project went online (p_year) in descending order.</p>
+                    <pre><code class="hljs javascript">$ curl -i -X GET <span class="hljs-string">"https://eersc.usgs.gov/api/uswtdb/v1/turbines?&amp;order=p_tnum.desc,p_year.asc"</span></code></pre>
+                    <p>The USWTDB contains null values where data attributes are unknown or missing. Null values for any desired key can be sorted in either direction by appending <span class="code">nullsfirst</span> or <span class="code">nullslast</span> to the order query. In the example below, 100 turbine records are queried, ordered by turbine model, where null values are sent to the end of the return:</p>
+                    <pre><code class="hljs javascript">$ curl -i -X GET <span class="hljs-string">"https://eersc.usgs.gov/api/uswtdb/v1/turbines?&amp;order=t_model.nullslast&amp;limit=100"</span></code></pre>
+                </div>
+                <div class="mt-4">
+                    <h4 class="splashHeader navOffset" id="rowFilter">Row Filtering</h4>
+                    <p>The USWTDB API supports filtering table rows by appending the property (or multiple properties), the filter operator, and the filter value to the request. Filters can keep or exclude table rows using simple operators that compare against specified key values. Applying filters to the request allows for more efficient, faster API responses because unneeded data is withheld by the server prior to API return. This is particularly useful when users are only interested in a subset of data from the USWTDB.</p>
+
+                    <p>To apply row filtering, simply append the <span class="code">?</span> query string parameter and a valid filter expression (see <a href="https://eerscmap.usgs.gov/uswtdb/api-doc/#operators">Filter Operators</a> section) to your request. In the example below, we'll filter our return to show only turbines that were installed in 1995:</p>
+                    <pre><code class="hljs javascript">$ curl -i -X GET <span class="hljs-string">"https://eersc.usgs.gov/api/uswtdb/v1/turbines?&amp;p_year=eq.1995"</span></code></pre>
+                    <p>Multiple parameters can be logically conjoined using the <span class="code">&amp;</span> parameter, allowing for filtering on as many attributes as desired. In the request below, we'll further refine our query to only return turbines that were installed in 1995 and had a rated capacity greater than 2.5 MW:</p>
+                    <pre><code class="hljs javascript">$ curl -i -X GET <span class="hljs-string">"https://eersc.usgs.gov/api/uswtdb/v1/turbines?&amp;p_year=eq.1995&amp;t_cap=gt.200"</span></code></pre>
+
+                </div>
+                <div class="mt-4">
+                    <h4 class="splashHeader navOffset" id="operators">Filter Operators</h4>
+                    <p>The table below contains the available operators used to filter returns by USWTDB key values. For each available operator, a real-world example is included showing how the operator is used to filter API responses. Note that some of the examples combine the query operators with additional functions described previously in the documentation. As previously noted, query strings should be appended to the USWTDB API base path <span class="code">https://eersc.usgs.gov/api/uswtdb/v1/</span>.</p>
+                    <div class="table-responsive">
+                        <table class="mt-4 table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Operator</th>
+                                    <th scope="col">Meaning</th>
+                                    <th scope="col">Example of Operator in Request</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">eq</th>
+                                    <td>equals</td>
+                                    <td><span class="code">turbines?&amp;t_state=eq.AK</span><span class="font-italic smaller">&nbsp;&nbsp;Return turbines that are located in Alaska.</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">gt</th>
+                                    <td>greater than</td>
+                                    <td><span class="code">turbines?&amp;t_cap=gt.3&amp;t_state=eq.OH</span><span class="font-italic smaller">&nbsp;&nbsp;Return turbines that have a rated capacity greater than 3 MW that are located in Ohio.</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">gte</th>
+                                    <td>greater than or equal</td>
+                                    <td><span class="code">turbines?&amp;t_hh=gte.100&amp;p_year=eq.2012</span><span class="font-italic smaller">&nbsp;&nbsp;Return turbines that have a hub height greater or equal to 100 meters that were constructed in 2012.</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">lt</th>
+                                    <td>less than</td>
+                                    <td><span class="code">turbines?&amp;p_tnum=lt.45&amp;t_manu=eq.Vestas</span><span class="font-italic smaller">&nbsp;&nbsp;Return turbines in projects containing less than 45 turbines that were manufactured by Vestas.</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">lte</th>
+                                    <td>less than or equal</td>
+                                    <td><span class="code">turbines?&amp;t_conf_loc=lte.2&amp;ylat=gt.42</span><span class="font-italic smaller">&nbsp;&nbsp;Return turbines that have a location confidence less than or equal to 2 (see attribute definitions for t_conf_loc in table above) and are north of 42° latitude.</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">neq</th>
+                                    <td>not equal</td>
+                                    <td><span class="code">turbines?&amp;t_manu=neq.Gamesa&amp;select=count</span><span class="font-italic smaller">&nbsp;&nbsp;Count the number of turbines where the manufacturer is not Gamesa. Note that you can return a count on any query by simply appending <span class="code">&amp;select=count</span> to the query string.</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">like</th>
+                                    <td>LIKE operator (use * as wildcard)</td>
+                                    <td><span class="code">turbines?&amp;t_img_date=like.*/20*&amp;order=case_id</span><span class="font-italic smaller">&nbsp;&nbsp;Return turbines that have "/20" somewhere in the image date string and return them in alphabetical order by identification number. Note the like operator is case-sensitive (use ilike operator for case-insensitive queries).</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">ilike</th>
+                                    <td>ILIKE operator (use * as wildcard)</td>
+                                    <td><span class="code">turbines?&amp;p_name=ilike.Wind*&amp;order=t_cap.desc,t_ttlh.asc</span><span class="font-italic smaller">&nbsp;&nbsp;Return turbines that have project names that begin with "Wind", "wind", "WIND", etc., and return them sorted by descending rated capacity, and ascending total height. Note the ilike operator is case-insensitive.</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">in</th>
+                                    <td>one of a list of values</td>
+                                    <td><span class="code">turbines?&amp;t_state=in.(VA,WV)&amp;select=p_name,p_year</span><span class="font-italic smaller">&nbsp;&nbsp;Return turbines that are located in either Virginia or West Virginia, and only show the keys "project name" and "project year" in response.</span></td>
+                                </tr><tr>
+                                    <th scope="row">is</th>
+                                    <td>checking for exact equality (null,true,false)</td>
+                                    <td><span class="code">turbines?&amp;or=(t_cap.is.null,t_cap.gte.3500)</span><span class="font-italic smaller">&nbsp;&nbsp;Return turbines where rated capacity is either null or is greater than or equal to 3500 kW. Note that multiple parameters are logically disjoined by using <span class="code">or</span></span>.</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">not</th>
+                                    <td>negates another operator</td>
+                                    <td><span class="code">turbines?&amp;and=(t_manu.not.ilike.*China*,t_cap.gt.3500)</span><span class="font-italic smaller">&nbsp;&nbsp;Return turbines where the manufacturer name does not contain "China" and rated capacity is greater or equal to 3000 kW. Note that multiple parameters are logically conjoined by using <span class="code">and</span></span>.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h4 class="splashHeader navOffset" id="colFilter">Column Filtering</h4>
+                    <p>By default, the USWTDB API returns data with all columns (attribute fields) in the response. If you're only interested in a subset of these, you can specify which columns are returned using the <span class="code">select</span> parameter in the query string. This effectively tells the API to withhold all unneeded data fields, resulting in a far more efficient response. In the example below, let's say you were only interested a response that included project name, turbine capacity, and the state where the turbine was located (we'll also sort by project name in descending order):</p>
+                    <pre><code class="hljs javascript">$ curl -i -X GET <span class="hljs-string">"https://eersc.usgs.gov/api/uswtdb/v1/turbines?&amp;select=p_name,t_cap,t_state&amp;order=p_name.desc"</span></code></pre>
+                    <p>Our response (below) only returns the columns passed in our select parameter:</p>
+                    <pre><code class="json hljs"> {<span class="hljs-attr">"p_name"</span>:<span class="hljs-string">"Zotos"</span>,<span class="hljs-attr">"t_cap"</span>:<span class="hljs-number">1650</span>,<span class="hljs-attr">"t_state"</span>:<span class="hljs-string">"NY"</span>},
+ {<span class="hljs-attr">"p_name"</span>:<span class="hljs-string">"Zotos"</span>,<span class="hljs-attr">"t_cap"</span>:<span class="hljs-number">1650</span>,<span class="hljs-attr">"t_state"</span>:<span class="hljs-string">"NY"</span>},
+ {<span class="hljs-attr">"p_name"</span>:<span class="hljs-string">"Zephyr Wind Project"</span>,<span class="hljs-attr">"t_cap"</span>:<span class="hljs-number">1500</span>,<span class="hljs-attr">"t_state"</span>:<span class="hljs-string">"OH"</span>},
+ ...</code></pre>
+                    <p>In some cases, you may want to rename (alias) a column name on API return. Aliases are often used to make column names more readable or easier to understand. This can be achieved by prefixing the column name with a column alias, followed by the <span class="code">:</span> operator. Let's say you'd like to display API returns limited to project name, turbine capacity, and rotor diameter, but feel that the default column name for rotor diameter <span class="code">t_rd</span> needs to be spelled out as "rotor_diameter". To do this, we'd simply append the normal select parameter to our query and add the column rename prefix <span class="code">rotor_diameter</span> to <span class="code">t_rd</span>:</p>
+                    <pre><code class="hljs javascript">$ curl -i -X GET <span class="hljs-string">"https://eersc.usgs.gov/api/uswtdb/v1/turbines?&amp;select=p_name,t_cap,rotor_diameter:t_rd"</span></code></pre>
+                    <p>Our response (below) returns the columns passed in our select parameter, but with <span class="code">t_rd</span> column renamed to <span class="code">rotor_diameter</span>:</p>
+                    <pre><code class="json hljs"> {<span class="hljs-attr">"p_name"</span>:<span class="hljs-string">"Agassiz Beach"</span>,<span class="hljs-attr">"t_cap"</span>:<span class="hljs-number">660</span>,<span class="hljs-attr">"rotor_diameter"</span>:<span class="hljs-number">47.00</span>},
+ {<span class="hljs-attr">"p_name"</span>:<span class="hljs-string">"Air Force (Barnstable)"</span>,<span class="hljs-attr">"t_cap"</span>:<span class="hljs-number">1500</span>,<span class="hljs-attr">"rotor_diameter"</span>:<span class="hljs-number">77.00</span>},
+ {<span class="hljs-attr">"p_name"</span>:<span class="hljs-string">"Alite Wind Farm"</span>,<span class="hljs-attr">"t_cap"</span>:<span class="hljs-number">3000</span>,<span class="hljs-attr">"rotor_diameter"</span>:<span class="hljs-number">90.00</span>},
+ ...</code></pre>
+                    <p>The USWTDB API allows columns to be converted from one data type to another through casting. Examples of common casts are strings to date type, numeric type to text, or character strings to numeric values. Note that not every data type can be cast into every other data type, and invalid casting will result in an code 400 error from the API. To cast a column, suffix it with a <span class="code">::</span> plus the desired type. Let's say you'd like to cast the default string type <span class="code">t_img_date</span> as a date type, and cast the default integer type <span class="code">t_cap</span> as a string type. To do this we'll apply our casts to the appropriate columns:</p>
+                    <pre><code class="hljs javascript">$ curl -i -X GET <span class="hljs-string">"https://eersc.usgs.gov/api/uswtdb/v1/turbines?&amp;select=t_img_date::date,t_cap::text"</span></code></pre>
+                    <p>Our response (below) returns the selected columns formatted with the desired casts:</p>
+                    <pre><code class="json hljs"> {<span class="hljs-attr">"t_img_date"</span>:<span class="hljs-string">"2017-04-21"</span>,<span class="hljs-attr">"t_cap"</span>:<span class="hljs-string">"1000"</span>},
+ {<span class="hljs-attr">"t_img_date"</span>:<span class="hljs-string">"2017-04-21"</span>,<span class="hljs-attr">"t_cap"</span>:<span class="hljs-string">"660"</span>},
+ {<span class="hljs-attr">"t_img_date"</span>:<span class="hljs-string">"2012-01-01"</span>,<span class="hljs-attr">"t_cap"</span>:<span class="hljs-string">"1500"</span>},
+ ...</code></pre>
+                </div>
+                <div class="mt-4">
+                    <h4 class="splashHeader navOffset" id="roleAuth">Authorization</h4>
+                    <p>The creation of USWTDB was jointly funded by the U.S. Department of Energy via the Lawrence Berkeley National Laboratory, the U.S. Geological Survey, and the American Clean Power Association. The database is being continuously updated through collaboration among these partners and as such, requires authorized access to the API by selected collaborators. For public users, the USWTDB API acts as read-only resource and allows standard HTTP <span class="code">GET</span> (read) requests to be received successfully without authentication. For any additional incoming HTTP methods, including <span class="code">POST</span> (create records), <span class="code">PUT</span> (replace/update records), <span class="code">PATCH</span> (patial update records), and <span class="code">DELETE</span> (deletes a record), authorization is required.</p>
+                    <div class="mt-4 pl-3">
+                        <h6 class="splashHeader navOffset" id="token">JSON Web Tokens</h6>
+                        <p>Authorized users can authenticate with the USWTDB API by sending requests with a <a href="https://jwt.io/" target="_blank">JSON Web Token (JWT)</a>. A JWT is a JSON object used as a compact and self-contained way for securely transmitting information between an authorized user and the API server. JWT's consist of three components: a header, a payload, and a signature. JWT signatures are cryptographically signed using a password known to USWTDB administrators and the server. Since token holders don't have access to the password, they cannot modify the contents of the JWT without receiving a 401 (Unauthorized) response from the API. Once the user has made a successful connection to the API using the JWT, each subsequent request will include the token, allowing the user authorized access without having to set up the token again until its expiration. Tokens distributed to authorized users will have expiration explicitly set via the payload in the signing key. Authorized users can request a JWT by <a href="mailto:uswtdb@lbl.gov?cc=GS-USWTDB%40usgs.gov&amp;subject=USWTDB%20JWT%20Request" target="_blank">contacting a USWTDB API administrator</a>.</p>
+                    </div>
+                    <div class="mt-4">
+                        <h4 class="splashHeader navOffset" id="authReq">Authorized Requests</h4>
+                        <p>Once the JWT is received by the authorized user, API authenticated requests can be sent with the token to the API server. This is done by adding the token via the <span class="code">Authorization</span> header with the <span class="code">Bearer</span> authentication scheme. In the example below, let's update the turbine manufacturer <span class="code">t_manu</span> value for turbine ID 636 via a <span class="code">PATCH</span> request method. We'll send the data as JSON but could alternatively send as CSV by setting <span class="code">Content-Type: text/csv</span>. The request will include an HTTP header containing the authentication token:</p>
+                        <pre><code class="hljs javascript"> curl -X PATCH <span class="hljs-string">"https://eersc.usgs.gov/api/uswtdb/v1/turbines?&amp;case_id=eq.636"</span> \
+     -H <span class="hljs-string">'Authorization: Bearer {your token here}'</span> \
+     -H <span class="hljs-string">'Content-Type: application/json'</span> \
+     -d <span class="hljs-string">'{ "t_manu": "GE Wind" }'</span></code></pre>
+                        <p>Bulk inserts work just like single row inserts except that you provide either a JSON array of objects having uniform keys, or multiple lines in CSV format. In many cases, users may wish to insert new rows to the database and update existing rows via a single operation (UPSERT). To do this, simply <span class="code">POST</span> with the <span class="code">Prefer: resolution=merge-duplicates</span> header.</p>
+                        <pre><code class="hljs javascript"> curl -X POST <span class="hljs-string">"https://eersc.usgs.gov/api/uswtdb/v1/turbines?&amp;case_id=eq.636"</span> \
+     -H <span class="hljs-string">'Authorization: Bearer {your token here}'</span> \
+     -H <span class="hljs-string">'Prefer: resolution=merge-duplicates'</span> \
+     -H <span class="hljs-string">'cache-control: no-cache'</span> \
+     -d <span class="hljs-string">'case_id,p_name,p_year,p_tnum,p_cap,t_manu,t_model \
+       3018370,Jiminy Peak Ski Resort,2007,1,1.5,GE Wind \
+       3045115,Judith Gap,2005,90,135,GE Wind'</span></code></pre>
+                        <p>Note that authorization claims via database roles will be included in the payload of the token. If authorization claims are changed during the lifetime of the token, the changes will not become effective until a new token is issued.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Begin Footer -->
+    <footer class="footer fill-ltBlue">
+        <!-- Social Icons -->
+        <div class=" mx-auto">
+            <div class="iconList text-center">
+                <a class="no-underline" href="https://twitter.com/usgs" target="_blank">
+                    <svg class="svgIconDark" width="30" height="30" viewBox="0 0 25 25">
+                        <title>USGS on Twitter</title>
+                        <path d="M21.725 5.338c-.744.47-1.605.804-2.513 1.006a3.978 3.978 0 0 0-2.942-1.293c-2.22 0-4.02 1.81-4.02 4.02 0 .32.034.63.07.94-3.31-.18-6.27-1.78-8.255-4.23a4.544 4.544 0 0 0-.574 2.01c.04 1.43.74 2.66 1.8 3.38-.63-.01-1.25-.19-1.79-.5v.08c0 1.93 1.38 3.56 3.23 3.95-.34.07-.7.12-1.07.14-.25-.02-.5-.04-.72-.07.49 1.58 1.97 2.74 3.74 2.8a8.49 8.49 0 0 1-5.02 1.72c-.3-.03-.62-.04-.93-.07A11.447 11.447 0 0 0 8.88 21c7.386 0 11.43-6.13 11.414-11.414.015-.21.01-.38 0-.578a7.604 7.604 0 0 0 2.01-2.08 7.27 7.27 0 0 1-2.297.645 3.856 3.856 0 0 0 1.72-2.23"></path>
+                    </svg>
+                </a>
+                <a class="no-underline" href="https://www.usgs.gov/news/national-news-release/feed" target="_blank">
+                    <svg class="svgIconDark" width="25" height="25" viewBox="-5 0 38 38">
+                        <title>USGS RSS Feed</title>
+                        <path d="M 4.259,23.467c-2.35,0-4.259,1.917-4.259,4.252c0,2.349, 1.909,4.244, 4.259,4.244 c 2.358,0, 4.265-1.895, 4.265-4.244C 8.525,25.383, 6.618,23.467, 4.259,23.467zM 0.005,10.873l0,6.133 c 3.993,0, 7.749,1.562, 10.577,4.391c 2.825,2.822, 4.384,6.595, 4.384,10.603l 6.16,0 C 21.125,20.349, 11.648,10.873, 0.005,10.873zM 0.012,0l0,6.136 c 14.243,0, 25.836,11.604, 25.836,25.864L 32,32 C 32,14.36, 17.648,0, 0.012,0z"></path>
+                    </svg>
+                </a>
+                <a class="no-underline" href="https://www.facebook.com/usgeologicalsurvey" target="_blank">
+                    <svg class="svgIconDark" width="30" height="30" viewBox="0 0 25 25">
+                        <title>USGS on Facebook</title>
+                        <path d="M21 12.646C21 7.65 16.97 3.6 12 3.6s-9 4.05-9 9.046a9.026 9.026 0 0 0 7.59 8.924v-6.376H8.395V12.64h2.193v-1.88c0-2.186 1.328-3.375 3.267-3.375.93 0 1.728.07 1.96.1V9.77H14.47c-1.055 0-1.26.503-1.26 1.242v1.63h2.517l-.33 2.554H13.21V21.6c4.398-.597 7.79-4.373 7.79-8.954"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        <!-- End Social Icons -->
+        <div class="container">
+            <div class="col-12">
+                <div class="mt-4">
+                    <a href="https://www.usgs.gov/" target="_blank" class="light d-inline-block align-top"><img src="./API Documentation _ USWTDB_files/usgsLogoLight.svg" alt="U.S. Geological Survey">
+                    </a>
+                </div>
+                <hr style="margin: 0.5rem; border-top: 1px solid rgba(255, 255, 255, 0.25)">
+                <div class="row text-uppercase footertext">
+                    <a class="col-sm-3 light" href="https://www.usgs.gov/laws/accessibility.html" target="_blank">Accessibility</a>
+                    <a class="col-sm-2 light" href="https://www.usgs.gov/foia/" target="_blank">Foia</a>
+                    <a class="col-sm-2 light" href="https://www.usgs.gov/laws/privacy.html" target="_blank">Privacy</a>
+                    <a class="col-sm-5 light" href="https://www.usgs.gov/laws/policies_notices.html" target="_blank">Policies and Notices</a>
+                </div>
+                <div class="row mt-3 mb-4">
+                    <div class="col-sm-6 pl-0 footertextsmall mb-2">
+                        <div class="col-sm-12 light">
+                            <a href="https://www.doi.gov/" target="_blank" class="light footertextsmall">U.S. Department of the Interior</a> | <a class="light footertextsmall" href="https://www.usgs.gov/" target="_blank">U.S. Geological Survey</a>
+                        </div>
+                        <div class="col-sm-12 light">Supported by the <a class="light footertextsmall" href="https://www.usgs.gov/energy-and-minerals/energy-resources-program" target="_blank">Energy Resources Program</a>
+                        </div>
+                        <div class="col-sm-12 light">Page Contact Information: <a class="light footertextsmall" href="mailto:cgarrity@usgs.gov" target="_blank">Christopher Garrity</a>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 text-right footer-brand">
+                        <a href="https://www.usa.gov/" target="_blank">
+                            <img src="./API Documentation _ USWTDB_files/usaGovLogo.svg" class="usaLogo" alt="USA.gov Logo">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- End Footer -->
+    <script src="./API Documentation _ USWTDB_files/particles.min.js"></script>
+    <script src="./API Documentation _ USWTDB_files/site.js"></script>
+
+
+
+</body></html>
