@@ -1408,6 +1408,7 @@ name = "repository"
 version = "0.1.0"
 dependencies = [
  "once_cell",
+ "serde",
  "tiberius",
  "tokio",
  "tokio-util",
@@ -1439,6 +1440,7 @@ dependencies = [
  "rocket_codegen",
  "rocket_http",
  "serde",
+ "serde_json",
  "state",
  "tempfile",
  "time 0.3.2",

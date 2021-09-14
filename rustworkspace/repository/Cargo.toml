@@ -10,3 +10,4 @@ once_cell = "1.8"
 tiberius = "0.6"
 tokio-util = { version = "0.6", features = ["compat"] }
 tokio = { version = "1.11", features = ["full"] }
+serde = "1.0"
