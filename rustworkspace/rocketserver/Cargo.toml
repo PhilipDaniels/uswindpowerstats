@@ -5,3 +5,4 @@ edition = "2018"
 
 [dependencies]
 rocket = { git = "https://github.com/SergioBenitez/Rocket", branch = "master" }
+repository = { path = "../repository" }
