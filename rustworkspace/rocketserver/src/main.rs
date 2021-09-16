@@ -1,13 +1,12 @@
 use repository::{Repository, models::ImageSource};
 use rocket::{get, launch, routes, response::Responder, serde::json::Json};
-use rocket::tokio::time::{sleep, Duration};
 
 #[derive(Debug, Responder)]
 pub enum Error {
     #[response(status = 500)]
     LowLevel(String),
     #[response(status = 404)]
-    NotFound(()),           // Get rid of this String?
+    NotFound(()),
 }
 
 impl From<repository::error::Error> for Error {
@@ -19,21 +18,30 @@ impl From<repository::error::Error> for Error {
     }
 }
 
-#[get("/delay/<seconds>")]
-async fn delay(seconds: u64) -> String {
-    sleep(Duration::from_secs(seconds)).await;
-    format!("Waited for {} seconds", seconds)
+#[launch]
+fn rocket() -> _ {
+    rocket::build().mount("/", routes![
+        index,
+        get_image_sources, get_image_source
+    ])
 }
 
 #[get("/")]
-async fn index() -> Result<Json<Vec<ImageSource>>, crate::Error> {
+async fn index() -> &'static str {
+    "Hello world!"
+}
+
+#[get("/api/imagesources")]
+async fn get_image_sources() -> Result<Json<Vec<ImageSource>>, crate::Error> {
     let mut repo = Repository::open(None).await?;
     let mut image_sources = repo.get_all_image_sources().await?;
     image_sources.sort_by(|a,b| a.id.cmp(&b.id));
     Ok(Json(image_sources))
 }
 
-#[launch]
-fn rocket() -> _ {
-    rocket::build().mount("/", routes![index, delay])
+#[get("/api/imagesource/<id>")]
+async fn get_image_source(id: u8) -> Result<Json<ImageSource>, crate::Error> {
+    let mut repo = Repository::open(None).await?;
+    let image_source = repo.get_image_source(id).await?;
+    Ok(Json(image_source))
 }

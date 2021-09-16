@@ -69,7 +69,7 @@ impl Repository {
     }
 
     /// Gets the ImageSource with the specific Id. Returns None if no match found.
-    async fn get_image_source(&mut self, id: u8) -> Result<ImageSource, crate::error::Error> {
+    pub async fn get_image_source(&mut self, id: u8) -> Result<ImageSource, crate::error::Error> {
         let stream = self.client.query("SELECT Id, Name FROM dbo.ImageSource WHERE Id = @P1", &[&id]).await?;
         let rows = stream.into_first_result().await?;
         match rows.iter().next() {
@@ -79,7 +79,7 @@ impl Repository {
     }
 
     /// Update a row in the ImageSource table. Returns the number of rows affected (0 or 1).
-    async fn update_image_source(&mut self, id: u8, name: &str) -> Result<u64, crate::error::Error> {
+    pub async fn update_image_source(&mut self, id: u8, name: &str) -> Result<u64, crate::error::Error> {
         let stmt = "UPDATE dbo.ImageSource SET Name = @P1 WHERE Id = @P2;";
         let result = self.client.execute(stmt, &[&name, &id]).await?;
         Ok(result.total())
