@@ -1,5 +1,5 @@
 use repository::{Repository, models::ImageSource};
-use rocket::{Build, State, futures::lock::Mutex, get, response::Responder, routes, serde::json::Json};
+use rocket::{Build, State, futures::lock::Mutex, get, put, response::Responder, routes, serde::json::Json};
 
 #[derive(Debug, Responder)]
 pub enum Error {
@@ -9,6 +9,8 @@ pub enum Error {
     LowLevel(String),
     #[response(status = 404)]
     NotFound(()),
+    #[response(status = 500)]
+    ServerError(String)
 }
 
 type SafeRepo = Mutex<Repository>;
@@ -39,12 +41,13 @@ async fn rocket() -> Result<rocket::Rocket<Build>, crate::Error> {
 
     let routes = routes![
         index,
-        get_image_sources, get_image_source
+        get_image_sources, get_image_source, update_image_source
         ];
 
     Ok(rocket::build()
         .mount("/", routes)
         .manage(state))
+        
 }
 
 #[get("/")]
@@ -52,6 +55,7 @@ async fn index() -> &'static str {
     "Hello world!"
 }
 
+/// curl -w "\n" -i -X GET http://localhost:8000/api/imagesources
 #[get("/api/imagesources")]
 async fn get_image_sources(repo: &State<SafeRepo>) -> Result<Json<Vec<ImageSource>>, crate::Error> {
     let mut repo = repo.lock().await;
@@ -60,9 +64,21 @@ async fn get_image_sources(repo: &State<SafeRepo>) -> Result<Json<Vec<ImageSourc
     Ok(Json(image_sources))
 }
 
-#[get("/api/imagesource/<id>")]
+/// curl -w "\n" -i -X GET http://localhost:8000/api/imagesources/1
+#[get("/api/imagesources/<id>")]
 async fn get_image_source(repo: &State<SafeRepo>, id: u8) -> Result<Json<ImageSource>, crate::Error> {
     let mut repo = repo.lock().await;
     let image_source = repo.get_image_source(id).await?;
     Ok(Json(image_source))
+}
+
+/// curl -X PUT http://localhost:8000/api/imagesources/1 -d '"Digital Globe XXX"' -H "Content-Type: application/json" 
+#[put("/api/imagesources/<id>", format = "json", data = "<name>")]
+async fn update_image_source(repo: &State<SafeRepo>, id: u8, name: Json<String>) -> Result<(), crate::Error> {
+    let mut repo = repo.lock().await;
+    match repo.update_image_source(id, &name).await? {
+        0 => Err(Error::NotFound(())),
+        1 => Ok(()),
+        n @ _ => Err(Error::ServerError(format!("Unexpected row count {}", n))),
+    }
 }
