@@ -6,3 +6,5 @@ edition = "2018"
 [dependencies]
 repository = { path = "../repository" }
 rocket = { git = "https://github.com/SergioBenitez/Rocket", branch = "master", features = ["json"] }
+rust_decimal = "1.15.0"
+serde = "1.0"

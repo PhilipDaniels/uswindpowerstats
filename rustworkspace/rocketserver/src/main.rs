@@ -1,10 +1,10 @@
-use repository::{
-    models::{ConfidenceLevel, County, ImageSource, Manufacturer, Model, Project, Turbine},
-    Repository,
-};
+use repository::Repository;
 use rocket::{
     futures::lock::Mutex, get, put, response::Responder, routes, serde::json::Json, Build, State,
 };
+
+mod results;
+use results::*;
 
 #[derive(Debug, Responder)]
 pub enum Error {
@@ -17,8 +17,6 @@ pub enum Error {
     #[response(status = 500)]
     ServerError(String),
 }
-
-type SafeRepo = Mutex<Repository>;
 
 impl From<repository::error::Error> for Error {
     fn from(err: repository::error::Error) -> Self {
@@ -36,6 +34,8 @@ impl From<rocket::Error> for Error {
         Error::Rocket(format!("{}", err))
     }
 }
+
+type SafeRepo = Mutex<Repository>;
 
 #[rocket::main]
 async fn main() -> Result<(), crate::Error> {
@@ -73,6 +73,7 @@ async fn get_image_sources(repo: &State<SafeRepo>) -> Result<Json<Vec<ImageSourc
     let mut repo = repo.lock().await;
     let mut image_sources = repo.get_all_image_sources().await?;
     image_sources.sort_by(|a, b| a.id.cmp(&b.id));
+    let image_sources = image_sources.into_iter().map(|i| i.into()).collect();
     Ok(Json(image_sources))
 }
 
@@ -84,7 +85,7 @@ async fn get_image_source(
 ) -> Result<Json<ImageSource>, crate::Error> {
     let mut repo = repo.lock().await;
     let image_source = repo.get_image_source(id).await?;
-    Ok(Json(image_source))
+    Ok(Json(image_source.into()))
 }
 
 /// curl -X PUT http://localhost:8000/api/imagesources/1 -d '"Digital Globe XXX"' -H "Content-Type: application/json"
@@ -104,12 +105,11 @@ async fn update_image_source(
 
 /// curl -w "\n" -i -X GET http://localhost:8000/api/states
 #[get("/api/states")]
-async fn get_states(
-    repo: &State<SafeRepo>,
-) -> Result<Json<Vec<repository::models::State>>, crate::Error> {
+async fn get_states(repo: &State<SafeRepo>) -> Result<Json<Vec<results::State>>, crate::Error> {
     let mut repo = repo.lock().await;
     let mut states = repo.get_all_states().await?;
     states.sort_by(|a, b| a.id.cmp(&b.id));
+    let states = states.into_iter().map(|i| i.into()).collect();
     Ok(Json(states))
 }
 
@@ -119,6 +119,7 @@ async fn get_counties(repo: &State<SafeRepo>) -> Result<Json<Vec<County>>, crate
     let mut repo = repo.lock().await;
     let mut counties = repo.get_all_counties().await?;
     counties.sort_by(|a, b| a.id.cmp(&b.id));
+    let counties = counties.into_iter().map(|i| i.into()).collect();
     Ok(Json(counties))
 }
 
@@ -128,6 +129,7 @@ async fn get_projects(repo: &State<SafeRepo>) -> Result<Json<Vec<Project>>, crat
     let mut repo = repo.lock().await;
     let mut projects = repo.get_all_projects().await?;
     projects.sort_by(|a, b| a.id.cmp(&b.id));
+    let projects = projects.into_iter().map(|i| i.into()).collect();
     Ok(Json(projects))
 }
 
@@ -139,6 +141,7 @@ async fn get_manufacturers(
     let mut repo = repo.lock().await;
     let mut manufacturers = repo.get_all_manufacturers().await?;
     manufacturers.sort_by(|a, b| a.id.cmp(&b.id));
+    let manufacturers = manufacturers.into_iter().map(|i| i.into()).collect();
     Ok(Json(manufacturers))
 }
 
@@ -148,16 +151,16 @@ async fn get_models(repo: &State<SafeRepo>) -> Result<Json<Vec<Model>>, crate::E
     let mut repo = repo.lock().await;
     let mut models = repo.get_all_models().await?;
     models.sort_by(|a, b| a.id.cmp(&b.id));
+    let models = models.into_iter().map(|i| i.into()).collect();
     Ok(Json(models))
 }
 
 /// curl -w "\n" -i -X GET http://localhost:8000/api/turbines
 #[get("/api/turbines")]
-async fn get_turbines(repo: &State<SafeRepo>) -> Result<Json<Vec<(i32)>>, crate::Error> {
+async fn get_turbines(repo: &State<SafeRepo>) -> Result<Json<Vec<Turbine>>, crate::Error> {
     let mut repo = repo.lock().await;
     let mut turbines = repo.get_all_turbines().await?;
     turbines.sort_by(|a, b| a.id.cmp(&b.id));
-    Ok(Json(turbines.into_iter().map(|t| (t.id)).collect()))
-
-    //Ok(Json(turbines))
+    let turbines = turbines.into_iter().map(|i| i.into()).collect();
+    Ok(Json(turbines))
 }
