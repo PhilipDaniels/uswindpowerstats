@@ -154,7 +154,7 @@ async fn get_counties(repo: &State<SafeRepo>) -> Result<Json<Vec<County>>, crate
 async fn get_projects(repo: &State<SafeRepo>) -> Result<Json<Vec<Project>>, crate::Error> {
     let mut repo = repo.lock().await;
     let mut projects = repo.get_all_projects().await?;
-    projects.sort_by(|a, b| a.id.cmp(&b.id));
+    projects.sort_by(|a, b| a.name.cmp(&b.name));
     let projects = projects.into_iter().map(|i| i.into()).collect();
     Ok(Json(projects))
 }
@@ -166,7 +166,7 @@ async fn get_manufacturers(
 ) -> Result<Json<Vec<Manufacturer>>, crate::Error> {
     let mut repo = repo.lock().await;
     let mut manufacturers = repo.get_all_manufacturers().await?;
-    manufacturers.sort_by(|a, b| a.id.cmp(&b.id));
+    manufacturers.sort_by(|a, b| a.name.cmp(&b.name));
     let manufacturers = manufacturers.into_iter().map(|i| i.into()).collect();
     Ok(Json(manufacturers))
 }
@@ -176,7 +176,7 @@ async fn get_manufacturers(
 async fn get_models(repo: &State<SafeRepo>) -> Result<Json<Vec<Model>>, crate::Error> {
     let mut repo = repo.lock().await;
     let mut models = repo.get_all_models().await?;
-    models.sort_by(|a, b| a.id.cmp(&b.id));
+    models.sort_by(|a, b| a.name.cmp(&b.name));
     let models = models.into_iter().map(|i| i.into()).collect();
     Ok(Json(models))
 }
