@@ -1,7 +1,5 @@
 use repository::Repository;
-use rocket::{
-    futures::lock::Mutex, get, put, response::Responder, routes, serde::json::Json, Build, State,
-};
+use rocket::{Build, Request, Response, State, fairing::{Fairing, Info, Kind}, futures::lock::Mutex, get, http::Header, put, response::Responder, routes, serde::json::Json};
 
 mod results;
 use results::*;
@@ -37,6 +35,29 @@ impl From<rocket::Error> for Error {
 
 type SafeRepo = Mutex<Repository>;
 
+pub struct CORS;
+
+#[rocket::async_trait]
+impl Fairing for CORS {
+    fn info(&self) -> Info {
+        Info {
+            name: "Add CORS headers to responses",
+            kind: Kind::Response,
+        }
+    }
+
+    async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
+        println!("Setting access control allow origin");
+        response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
+        response.set_header(Header::new(
+            "Access-Control-Allow-Methods",
+            "POST, GET, PATCH, OPTIONS",
+        ));
+        response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+        response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+    }
+}
+
 #[rocket::main]
 async fn main() -> Result<(), crate::Error> {
     Ok(rocket().await?.launch().await?)
@@ -59,7 +80,10 @@ async fn rocket() -> Result<rocket::Rocket<Build>, crate::Error> {
         get_turbines,
     ];
 
-    Ok(rocket::build().mount("/", routes).manage(state))
+    Ok(rocket::build()
+        .attach(CORS)
+        .mount("/", routes)
+        .manage(state))
 }
 
 #[get("/")]
