@@ -1,0 +1,31 @@
+@inject HttpClient Http
+
+@if (states == null) {
+    <p><em>Loading US States...</em></p>
+} else {
+    <select name="us_states" id="us_states">
+        @foreach (var s in states)
+        {
+            <option value="@s.Id">@s.Name - @s.Capital - @s.Population</option>            
+        }
+    </select>
+}
+
+@code {
+    private List<UsState> states;
+
+    protected override async Task OnInitializedAsync()
+    {
+        states = (await Http.GetFromJsonAsync<UsState[]>("http://localhost:8000/api/states")).ToList();
+    }
+
+    public class UsState
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Capital { get; set; }
+        public int? Population { get; set; }
+        public int? AreaSquareKm { get; set; }
+        public string StateType { get; set; }
+    }
+}

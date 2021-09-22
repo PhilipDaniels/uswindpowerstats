@@ -1,0 +1,27 @@
+@inject HttpClient Http
+
+@if (manufacturers == null) {
+    <p><em>Loading Manufacturers...</em></p>
+} else {
+    <select name="manufacturers" id="manufacturers">
+        @foreach (var m in manufacturers)
+        {
+            <option value="@m.Id">@m.Name</option>
+        }
+    </select>
+}
+
+@code {
+    private List<Manufacturer> manufacturers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        manufacturers = (await Http.GetFromJsonAsync<Manufacturer[]>("http://localhost:8000/api/manufacturers")).ToList();
+    }
+
+    public class Manufacturer
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+}

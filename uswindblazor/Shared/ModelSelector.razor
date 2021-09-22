@@ -1,0 +1,33 @@
+@inject HttpClient Http
+
+@if (models == null) {
+    <p><em>Loading Models...</em></p>
+} else {
+    <select name="models" id="models">
+        @foreach (var m in models)
+        {
+            <option value="@m.Id">@m.Name</option>
+        }
+    </select>
+}
+
+@code {
+    private List<Model> models;
+
+    protected override async Task OnInitializedAsync()
+    {
+        models = (await Http.GetFromJsonAsync<Model[]>("http://localhost:8000/api/models")).ToList();
+    }
+
+    public class Model
+    {
+        public int Id { get; set; }
+        public int ManufacturerId { get; set; }
+        public string Name { get; set; }
+        public int? CapacityKW { get; set; }
+        public decimal? HubHeight { get; set; }
+        public decimal? RotorDiameter { get; set; }
+        public decimal? RotorSweptArea { get; set; }
+        public decimal? TotalHeightToTip { get; set; }
+    }
+}

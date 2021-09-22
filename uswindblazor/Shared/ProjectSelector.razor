@@ -1,0 +1,29 @@
+@inject HttpClient Http
+
+@if (projects == null) {
+    <p><em>Loading Projects...</em></p>
+} else {
+    <select name="projects" id="projects">
+        @foreach (var p in projects)
+        {
+            <option value="@p.Id">@p.Name</option>
+        }
+    </select>
+}
+
+@code {
+    private List<Project> projects;
+
+    protected override async Task OnInitializedAsync()
+    {
+        projects = (await Http.GetFromJsonAsync<Project[]>("http://localhost:8000/api/projects")).ToList();
+    }
+
+    public class Project
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public short? Population { get; set; }
+        public decimal? CapacityMW { get; set; }
+    }
+}
