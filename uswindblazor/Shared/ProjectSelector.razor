@@ -1,15 +1,12 @@
 @inject HttpClient Http
 
-@if (projects == null) {
-    <p><em>Loading Projects...</em></p>
-} else {
-    <select name="projects" id="projects">
-        @foreach (var p in projects)
-        {
-            <option value="@p.Id">@p.Name</option>
-        }
-    </select>
-}
+<RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+    Placeholder="Select Project..."
+    TextProperty="Name" ValueProperty="Id" Style="width:250px"
+    Data=@projects TValue="int"
+    Change=@(args => OnChange(args, "ProjectsDropDown"))
+    Name="ProjectsDropDown"
+    />
 
 @code {
     private List<Project> projects;
@@ -17,6 +14,13 @@
     protected override async Task OnInitializedAsync()
     {
         projects = (await Http.GetFromJsonAsync<Project[]>("http://localhost:8000/api/projects")).ToList();
+    }
+
+    void OnChange(object value, string name)
+    {
+        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+
+        Console.WriteLine($"{name} value changed to {str}");
     }
 
     public class Project
