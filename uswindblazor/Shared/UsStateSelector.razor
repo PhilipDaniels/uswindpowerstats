@@ -1,22 +1,27 @@
 @inject HttpClient Http
 
-@if (states == null) {
-    <p><em>Loading US States...</em></p>
-} else {
-    <select name="us_states" id="us_states">
-        @foreach (var s in states)
-        {
-            <option value="@s.Id">@s.Name - @s.Capital - @s.Population</option>            
-        }
-    </select>
-}
+<RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+    Placeholder="Select US States(s)..." Multiple="true"
+    TextProperty="Name" ValueProperty="Id" Style="width:250px"
+    Data=@states @bind-Value=@selectedValues
+    Change=@(args => OnChange(args, "UsStatesDropDown"))
+    Name="UsStatesDropDown"
+    />
 
 @code {
     private List<UsState> states;
+    private IEnumerable<string> selectedValues = new string[] { };
 
     protected override async Task OnInitializedAsync()
     {
         states = (await Http.GetFromJsonAsync<UsState[]>("http://localhost:8000/api/states")).ToList();
+    }
+
+    void OnChange(object value, string name)
+    {
+        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+
+        Console.WriteLine($"{name} value changed to {str}");
     }
 
     public class UsState
